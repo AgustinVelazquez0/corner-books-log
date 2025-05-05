@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import styles from "../styles/Header.module.css";
 import { useBookCategory } from "../context/useBookCategory";
 import { useBookAuthor } from "../context/useBookAuthor";
@@ -145,22 +146,25 @@ const Header = () => {
           {/* Enlaces de navegación */}
           <ul className={styles.navLinks}>
             <li className={styles.navItem}>
-              <a href="#" className={styles.navLink}>
+              {/* Link a Home */}
+              <Link to="/" className={styles.navLink}>
                 <Home size={18} />
                 <span>Inicio</span>
-              </a>
+              </Link>
             </li>
             <li className={styles.navItem}>
-              <a href="#" className={styles.navLink}>
+              {/* Link a Catalogo */}
+              <Link to="/catalogo" className={styles.navLink}>
                 <Book size={18} />
                 <span>Catálogo</span>
-              </a>
+              </Link>
             </li>
             <li className={styles.navItem}>
-              <a href="#" className={styles.navLink}>
+              {/* Link a Mi Cuenta */}
+              <Link to="/account" className={styles.navLink}>
                 <User size={18} />
                 <span>Mi Cuenta</span>
-              </a>
+              </Link>
             </li>
           </ul>
 
