@@ -1,7 +1,12 @@
 .bookList {
   padding: 2rem 1rem;
-  max-width: 1200px;
+  max-width: 1550px;
   margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
 }
 
 .title {
