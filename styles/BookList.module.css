@@ -1,0 +1,86 @@
+.bookList {
+  padding: 2rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  position: relative;
+}
+
+.title::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, #0077cc, #00aaff);
+  margin: 0.5rem auto 0;
+  border-radius: 2px;
+}
+
+/* Reemplazado grid por flexbox */
+.flexContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4.5rem;
+  margin-top: 2rem;
+}
+
+.flexItem {
+  flex: 1 1 280px;
+  min-height: 100%;
+  display: flex;
+}
+
+/* Para asegurarse que los BookCard ocupen todo el alto del flexItem */
+.flexItem > * {
+  width: 100%;
+}
+
+/* Mensaje para cuando no hay resultados */
+.noResults {
+  text-align: center;
+  padding: 3rem 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-top: 2rem;
+}
+
+.noResults p {
+  font-size: 1.1rem;
+  color: #666;
+}
+
+/* Media queries para hacer responsivo el layout */
+@media (max-width: 600px) {
+  .flexItem {
+    flex-basis: 100%;
+  }
+
+  .title {
+    font-size: 1.75rem;
+  }
+}
+
+@media (min-width: 601px) and (max-width: 900px) {
+  .flexItem {
+    flex-basis: calc(50% - 1rem);
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1200px) {
+  .flexItem {
+    flex-basis: calc(33.333% - 1rem);
+  }
+}
+
+@media (min-width: 1201px) {
+  .flexItem {
+    flex-basis: calc(25% - 1.125rem);
+  }
+}

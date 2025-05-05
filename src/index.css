@@ -1,0 +1,323 @@
+/* Estilos generales */
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background-image: url("https://wallpapers.com/images/hd/real-galaxy-pictures-wb6k1sddff2vy02o.jpg");
+  background-position: center top;
+  background-size: contain;
+  margin: 0;
+  padding: 0;
+  zoom: 90%;
+  overflow: auto;
+  min-height: 100vh;
+}
+
+/* Estilos para dispositivos móviles */
+@media only screen and (max-width: 768px) {
+  /* Estilos específicos para pantallas pequeñas */
+}
+
+/* Estilos para tabletas */
+@media only screen and (min-width: 769px) and (max-width: 1024px) {
+  /* Estilos específicos para tabletas */
+}
+
+/* Estilos para pantallas grandes */
+@media only screen and (min-width: 1025px) {
+  /* Estilos específicos para pantallas grandes */
+}
+
+/* Estilos para el header */
+header {
+  text-align: left;
+  padding: 20px;
+  background-position: center top;
+  color: #fff;
+}
+
+.inicio h1 {
+  font-size: xx-large;
+  border: 1px solid rgb(162, 106, 2);
+}
+
+/* Estilos de la barra de navegación */
+.navbar {
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  min-height: 60px;
+  z-index: 1000;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  padding: 10px 20px;
+}
+
+.navbar a:hover {
+  background-color: #555;
+}
+
+/* Ajuste para el contenido que sigue a la barra de navegación */
+.content {
+  margin-top: 60px;
+}
+
+h1 {
+  font-size: 20px;
+  color: #fff;
+  text-align: left;
+  text-shadow: 1px 1px 2px #333;
+  margin-top: 50px;
+  padding: 5px;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+h2 {
+  font-size: 20px;
+}
+
+h3 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* Estilos para las secciones de contenido */
+.contenido-seccion {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Estilos para los contenedores de libros */
+.contenedor {
+  display: flex;
+}
+
+/* Estilos para las imágenes de libros */
+.hero,
+.hero1,
+.hero2,
+.hero3,
+.hero4,
+.hero5,
+.hero6,
+.hero7,
+.hero8,
+.hero9,
+.hero10 {
+  background-position: center top;
+  background-size: auto 100%;
+  padding: 80px 0px;
+  margin: 30px;
+  text-shadow: 0 1px #000000;
+  width: 150px;
+  height: 60px;
+}
+
+.hero {
+  background-image: url("https://http2.mlstatic.com/D_NQ_NP_687035-MLA42321941512_062020-O.webp");
+}
+
+.hero1 {
+  background-image: url("https://www.penguinlibros.com/uy/2523716/el-poder-del-ahora.jpg");
+}
+
+.hero2 {
+  background-image: url("https://www.bookshop.com.uy/media/catalog/product/cache/53c38e0c7a2c0ce2aff344af94a67178/9/7/9788425432026.jpg");
+}
+
+.hero3 {
+  background-image: url("https://m.media-amazon.com/images/I/A1VSSe69MyL._AC_UF1000,1000_QL80_.jpg");
+}
+
+.hero4 {
+  background-image: url("https://www.libreriavila.com.uy/images/thumbs/0067216_las-48-leyes-del-poder-robert-greene_750.jpeg");
+}
+
+.hero5 {
+  background-image: url("https://contrapunto.cl/17027/rebelion-en-la-granja.jpg");
+}
+
+.hero6 {
+  background-image: url("https://f.fcdn.app/imgs/cb984e/grupolibros.com.uy/gli/fdd6/original/catalogo/978987566928497898756692841/1920-1200/1984-1984.jpg");
+}
+
+.hero7 {
+  background-image: url("https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1630278330i/22827028.jpg");
+}
+
+.hero8 {
+  background-image: url("https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1625989854i/58531440.jpg");
+}
+
+.hero9 {
+  background-image: url("https://f.fcdn.app/imgs/85a165/grupolibros.com.uy/gli/33f1/original/catalogo/978847953096997884795309691/1920-1200/introduccion-a-la-pnl-introduccion-a-la-pnl.jpg");
+}
+
+.hero10 {
+  background-image: url("https://books.google.com.uy/books/content?id=ExwDS2ikAJ8C&pg=PA1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U1NQzuHLG6Ly-K_i4_vr5ETA6amog&w=1280");
+}
+
+/* Estilos para el contenido adicional de los libros */
+.textoAdicional {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background-position: center;
+  background-color: rgba(0, 0, 0, 0.6);
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 86%;
+  min-height: 200px;
+  margin-left: 20px;
+  margin-top: 2%;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  overflow: hidden;
+  padding: 10px;
+  border: 1px solid rgb(162, 106, 2);
+}
+
+.textoAdicional h1 {
+  margin-top: 0;
+}
+
+.textoAdicional p {
+  color: #ffffff;
+  text-shadow: 1px 1px 1px rgb(0, 0, 0);
+  font-size: 17px;
+  margin-top: 0;
+  line-height: 1;
+  padding: 5px;
+  border: 1px solid rgb(162, 106, 2);
+  border-radius: 10px;
+}
+
+/* Estilos para los enlaces de libros */
+.hero a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.hero a:hover {
+  color: #f40707;
+}
+
+/* Estilos para los botones */
+button {
+  background-color: #212121;
+  color: #fff;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  border-radius: 4px;
+  margin-top: 50px;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
+button:hover {
+  background-color: #333;
+}
+
+/* Animación para los botones */
+@keyframes scaleDownUp {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+}
+
+button.animated {
+  animation: scaleDownUp 0.5s ease-in-out infinite;
+}
+
+#comentarioInput {
+  width: 400px;
+}
+
+#comentariosGenerales {
+  overflow-x: hidden;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  text-shadow: 1px 1px 1px rgb(0, 0, 0);
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+  border: 3px solid rgb(162, 106, 2);
+  overflow-y: hidden;
+  border-left-width: 2px;
+  margin: 20px;
+  padding: 20px;
+  min-height: 300px;
+}
+
+#comentariosGenerales h2 {
+  border: 1px solid rgb(162, 106, 2);
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.comentario p {
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.comentarios h2 {
+  color: #ffffff;
+  text-shadow: 1px 1px 1px rgb(0, 0, 0);
+}
+
+#formularioComentario {
+  min-height: 260px;
+  border: 3px solid rgb(19, 71, 2);
+  padding: 10px;
+  margin-top: 10px;
+  color: white;
+  text-shadow: -1px -1px 5px rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+#comentariosGenerales .comentario {
+  margin: 10px;
+}
+
+#comentariosGenerales .comentario h4 {
+  text-align: left;
+}
+
+textarea {
+  resize: none;
+  overflow: hidden;
+}
+
+#formularioComentario input[type="text"] {
+  color: black;
+  font-family: "Arial", sans-serif;
+}
+
+input[type="submit"] {
+  border: none;
+  padding: 5px 20px;
+  background-color: #212121;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+input[type="submit"]:hover {
+  background-color: #333;
+}
+
+#comentarioInput {
+  padding: 10px;
+  margin-top: 10px;
+}

@@ -1,0 +1,424 @@
+.header {
+  background-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+}
+
+.headerContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.75rem 1rem;
+}
+
+/* Logo y título */
+.logoContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logoIcon {
+  color: #0077cc;
+}
+
+.titleContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0;
+}
+
+/* Navegación */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* Barra de búsqueda */
+.searchContainer {
+  display: flex;
+  align-items: center;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  transition: all 0.2s ease;
+  max-width: 250px;
+}
+
+.searchFocused {
+  background-color: #fff;
+  box-shadow: 0 0 0 2px rgba(0, 119, 204, 0.3);
+}
+
+.searchIcon {
+  color: #666;
+  margin-right: 0.5rem;
+}
+
+.searchInput {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.9rem;
+  width: 100%;
+  color: #333;
+}
+
+.searchInput::placeholder {
+  color: #999;
+}
+
+/* Enlaces de navegación */
+.navLinks {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 1rem;
+}
+
+.navItem {
+  display: inline-block;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.navLink:hover {
+  background-color: #f5f5f5;
+  color: #0077cc;
+}
+
+/* Contenedor de filtros */
+.filterContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Estilos para dropdowns */
+.dropdownWrapper {
+  position: relative;
+}
+
+.dropdownButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #f0f0f0;
+  color: #333;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dropdownButton:hover {
+  background-color: #e5e5e5;
+}
+
+.activeButton {
+  background-color: #e1f0ff;
+  color: #0077cc;
+}
+
+.filterCount {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #0077cc;
+  color: white;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  width: 18px;
+  height: 18px;
+  margin-left: 0.25rem;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  min-width: 220px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  overflow: hidden;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdownHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.dropdownHeader span {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.clearButton {
+  background: none;
+  border: none;
+  color: #0077cc;
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.clearButton:hover {
+  text-decoration: underline;
+}
+
+.dropdownList {
+  max-height: 250px;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0;
+}
+
+.dropdownItem {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #333;
+  transition: background-color 0.2s ease;
+}
+
+.dropdownItem:hover {
+  background-color: #f5f5f5;
+}
+
+.dropdownItem.active {
+  background-color: #e1f0ff;
+  color: #0077cc;
+  font-weight: 500;
+}
+
+/* Filtros activos */
+.activeFilters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  background-color: #f8f9fa;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.activeFilters span:first-of-type {
+  color: #666;
+  margin-left: 0.25rem;
+}
+
+.filterBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background-color: #e1f0ff;
+  color: #0077cc;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.clearFilterButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: #0077cc;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.clearFilterButton:hover {
+  background-color: rgba(0, 119, 204, 0.1);
+}
+
+.clearAllButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  margin-left: 0.25rem;
+}
+
+.clearAllButton:hover {
+  background-color: #e5e5e5;
+  color: #333;
+}
+
+/* Menú móvil */
+.mobileMenuButton {
+  display: none;
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+/* Media queries para responsividad */
+@media (max-width: 1024px) {
+  .searchContainer {
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 900px) {
+  .headerContainer {
+    padding: 0.75rem 1rem;
+  }
+
+  .nav {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 0;
+  }
+
+  .navOpen {
+    display: flex;
+    animation: slideDown 0.3s ease;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .mobileMenuButton {
+    display: block;
+  }
+
+  .navLinks {
+    width: 100%;
+    flex-direction: column;
+    gap: 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+  }
+
+  .navItem {
+    width: 100%;
+  }
+
+  .navLink {
+    width: 100%;
+    padding: 0.75rem 0;
+    border-radius: 0;
+  }
+
+  .searchContainer {
+    width: 100%;
+    max-width: none;
+    margin-bottom: 0.5rem;
+  }
+
+  .filterContainer {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .activeFilters {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .dropdownWrapper {
+    flex: 1;
+  }
+
+  .dropdownButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .dropdownMenu {
+    width: 100%;
+    left: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .subtitle {
+    font-size: 0.75rem;
+  }
+}
