@@ -1,20 +1,21 @@
 import { useState } from "react";
+import { Link } from "react-router-dom"; // ✅ 1. Importar Link
 import { Heart, BookOpen, Star, ChevronDown, ChevronUp } from "lucide-react";
 import styles from "../styles/BookCard.module.css";
 
 const BookCard = ({
+  id, // ✅ 2. Agregar prop id
   title,
   author,
-  description,
+  description = "No hay descripción disponible",
   driveLink,
   category,
-  coverImage = "/api/placeholder/180/270", // Placeholder por defecto
+  coverImage = "/api/placeholder/180/270",
   rating = 0,
 }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
-  // Para limitar la descripción si es muy larga
   const isLongDescription = description.length > 150;
   const shortDescription = isLongDescription
     ? `${description.substring(0, 150)}...`
@@ -22,7 +23,6 @@ const BookCard = ({
 
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite);
-    // Aquí podrías añadir lógica para guardar en localStorage o en tu backend
   };
 
   const toggleExpand = () => {
@@ -116,6 +116,11 @@ const BookCard = ({
             <span>Leer o Descargar</span>
           </a>
         )}
+
+        {/* ✅ 3. Link al detalle del libro */}
+        <Link to={`/book/${id}`} className={styles.detailLink}>
+          <button className={styles.detailButton}>Ver detalles</button>
+        </Link>
       </div>
     </article>
   );

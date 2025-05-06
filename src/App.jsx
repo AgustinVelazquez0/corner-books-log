@@ -5,6 +5,7 @@ import Footer from "../components/Footer";
 import CommentForm from "../components/CommentForm";
 import CommentList from "../components/CommentList";
 import Account from "./pages/Account";
+import BookDetail from "./pages/BookDetail";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             }
           />
           <Route path="/account" element={<Account />} />
+          <Route path="/book/:id" element={<BookDetail />} />
         </Routes>
       </main>
       <Footer />
