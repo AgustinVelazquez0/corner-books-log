@@ -6,6 +6,10 @@
   border-radius: 12px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.3s ease;
+  word-wrap: break-word; /* Para que las palabras largas se dividan si es necesario */
+  overflow-wrap: break-word; /* Propiedad más moderna para evitar desbordamiento de palabras */
+  max-height: 200px; /* Ajusta la altura máxima que quieres */
+  overflow-y: auto; /* Agrega un scroll vertical si el contenido es demasiado largo */
 }
 
 .commentContainer:hover {
