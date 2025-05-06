@@ -1,43 +1,120 @@
 .formContainer {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
   background-color: #f9f9f9;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 1.75rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   margin-top: 3rem;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.formContainer:focus-within {
+  box-shadow: 0 6px 18px rgba(0, 123, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+.formContainer::before {
+  content: "Nuevo comentario";
+  position: absolute;
+  top: 15px;
+  left: 24px;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  padding: 0.4rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.25);
 }
 
 .textarea {
   resize: none;
-  padding: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  padding: 1.2rem;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 12px;
   font-size: 1rem;
+  line-height: 1.5;
   font-family: inherit;
   background-color: #fff;
-  transition: border-color 0.2s ease;
+  transition: all 0.25s ease;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03);
+  margin-top: 25px;
 }
 
 .textarea:focus {
   outline: none;
   border-color: #007bff;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03),
+    0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+.textarea::placeholder {
+  color: #aaa;
+  font-style: italic;
 }
 
 .submitButton {
   align-self: flex-end;
-  padding: 0.5rem 1.5rem;
-  background-color: #007bff;
+  padding: 0.75rem 2rem;
+  background: linear-gradient(to right, #007bff, #0069d9);
   color: #fff;
-  font-weight: bold;
+  font-weight: 600;
   font-size: 1rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 30px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.submitButton::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.2);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .submitButton:hover {
-  background-color: #0056b3;
+  background: linear-gradient(to right, #0062cc, #0056b3);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 123, 255, 0.3);
+}
+
+.submitButton:hover::after {
+  opacity: 1;
+}
+
+.submitButton:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.25);
+}
+
+/* Media queries para responsividad */
+@media (max-width: 768px) {
+  .formContainer {
+    padding: 1.5rem;
+    gap: 1rem;
+  }
+
+  .formContainer::before {
+    font-size: 0.8rem;
+    padding: 0.35rem 0.9rem;
+  }
+
+  .submitButton {
+    padding: 0.6rem 1.75rem;
+    font-size: 0.95rem;
+    width: 100%;
+  }
 }
