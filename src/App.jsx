@@ -6,6 +6,7 @@ import CommentForm from "../components/CommentForm";
 import CommentList from "../components/CommentList";
 import Account from "./pages/Account";
 import BookDetail from "./pages/BookDetail";
+import Catalogo from "./pages/Catalogo";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
               </section>
             }
           />
+          <Route path="/catalogo" element={<Catalogo />} />
           <Route path="/account" element={<Account />} />
           <Route path="/book/:id" element={<BookDetail />} />
         </Routes>
