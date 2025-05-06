@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "../styles/Header.module.css";
 import { useBookCategory } from "../context/useBookCategory";
 import { useBookAuthor } from "../context/useBookAuthor";
@@ -17,6 +17,8 @@ import {
 import books from "../src/data/books.json";
 
 const Header = () => {
+  const navigate = useNavigate();
+
   // Estados para manejo de UI
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCategoryDropdownVisible, setIsCategoryDropdownVisible] =
@@ -92,6 +94,23 @@ const Header = () => {
     setIsAuthorDropdownVisible(false);
   };
 
+  // Nueva función para realizar la búsqueda
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      // Navegar a la página de resultados de búsqueda con el query como parámetro
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      // También cerramos el menú móvil si está abierto
+      setIsMenuOpen(false);
+    }
+  };
+
+  // Manejar evento de tecla Enter en la búsqueda
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   // Limpiar todos los filtros
   const clearAllFilters = () => {
     setSelectedCategory(null);
@@ -131,12 +150,27 @@ const Header = () => {
             }`}
             ref={searchRef}
           >
-            <Search size={18} className={styles.searchIcon} />
+            <button
+              onClick={handleSearch}
+              style={{
+                background: "none",
+                border: "none",
+                padding: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+              }}
+              aria-label="Buscar"
+            >
+              <Search size={18} className={styles.searchIcon} />
+            </button>
             <input
               type="text"
               placeholder="Buscar libros..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={handleKeyPress}
               className={styles.searchInput}
               onFocus={() => setIsSearchFocused(true)}
               onBlur={() => setIsSearchFocused(false)}

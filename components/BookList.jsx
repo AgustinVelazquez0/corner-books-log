@@ -3,22 +3,33 @@ import { useBookCategory } from "../context/useBookCategory";
 import { useBookAuthor } from "../context/useBookAuthor";
 import BookCard from "./BookCard";
 import styles from "../styles/BookList.module.css";
-import books from "../src/data/books.json";
+import defaultBooks from "../src/data/books.json";
 
-const BookList = () => {
+const BookList = ({ books }) => {
   const { selectedCategory } = useBookCategory();
   const { selectedAuthor } = useBookAuthor();
 
   const scrollRef = useRef(null);
 
-  let filteredBooks = selectedCategory
-    ? books.filter((book) => book.category === selectedCategory)
-    : books;
+  // Usar los libros pasados como prop si existen, de lo contrario usar los libros por defecto
+  const booksToUse = books || defaultBooks;
 
-  if (selectedAuthor) {
-    filteredBooks = filteredBooks.filter(
-      (book) => book.author === selectedAuthor
-    );
+  // Aplicar filtros solo si no se reciben libros específicos como prop
+  let filteredBooks = booksToUse;
+
+  if (!books) {
+    // Solo aplicar filtros adicionales si estamos usando los libros por defecto
+    if (selectedCategory) {
+      filteredBooks = filteredBooks.filter(
+        (book) => book.category === selectedCategory
+      );
+    }
+
+    if (selectedAuthor) {
+      filteredBooks = filteredBooks.filter(
+        (book) => book.author === selectedAuthor
+      );
+    }
   }
 
   const scroll = (direction) => {
@@ -31,9 +42,12 @@ const BookList = () => {
     }
   };
 
+  // Determinar el título basado en si estamos mostrando resultados de búsqueda o libros recomendados
+  const listTitle = books ? "Resultados de búsqueda" : "Libros Recomendados";
+
   return (
     <section className={styles.bookList}>
-      <h2 className={styles.title}>Libros Recomendados</h2>
+      <h2 className={styles.title}>{listTitle}</h2>
 
       {filteredBooks.length === 0 ? (
         <div className={styles.noResults}>

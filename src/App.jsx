@@ -7,6 +7,7 @@ import CommentList from "../components/CommentList";
 import Account from "./pages/Account";
 import BookDetail from "./pages/BookDetail";
 import Catalogo from "./pages/Catalogo";
+import SearchResults from "./pages/SearchResults";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/catalogo" element={<Catalogo />} />
           <Route path="/account" element={<Account />} />
           <Route path="/book/:id" element={<BookDetail />} />
+          <Route path="/search" element={<SearchResults />} />
         </Routes>
       </main>
       <Footer />

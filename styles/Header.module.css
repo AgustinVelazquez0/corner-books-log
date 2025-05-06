@@ -297,6 +297,27 @@
   border-radius: 6px;
 }
 
+.searchIcon {
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.searchIcon:hover {
+  transform: scale(1.1);
+  color: #0077cc;
+}
+
+/* Esto asegura que el botón de búsqueda tenga la apariencia correcta en todos los navegadores */
+button {
+  font-family: inherit;
+  font-size: 100%;
+  line-height: 1.15;
+  margin: 0;
+  overflow: visible;
+  text-transform: none;
+  appearance: button;
+}
+
 .dropdownItem {
   padding: 0.8rem 1.1rem;
   cursor: pointer;
