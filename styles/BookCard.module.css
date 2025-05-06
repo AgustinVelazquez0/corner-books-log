@@ -260,6 +260,104 @@
   box-shadow: 0 1px 3px rgba(37, 99, 235, 0.25);
 }
 
+/* Contenedor limitado para las reseñas con scroll */
+.reviewContainer {
+  margin-top: 1.5rem;
+}
+
+.reviewContainer h4 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.reviewContainer h4::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(
+    to right,
+    var(--primary-color),
+    var(--accent-color)
+  );
+  border-radius: 999px;
+}
+
+/* El contenedor con scroll para las reseñas */
+.reviews {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 8px;
+  margin-bottom: 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-color) var(--background-off);
+}
+
+/* Estilos para scrollbar en Chrome/Safari */
+.reviews::-webkit-scrollbar {
+  width: 6px;
+}
+
+.reviews::-webkit-scrollbar-track {
+  background: var(--background-off);
+  border-radius: 10px;
+}
+
+.reviews::-webkit-scrollbar-thumb {
+  background-color: var(--primary-color);
+  border-radius: 10px;
+}
+
+/* Área de botones para mostrar/ocultar reseñas */
+.reviewToggleArea {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1rem 0;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+  margin-left: 1.1rem;
+}
+
+/* Botones para mostrar/ocultar reseñas */
+.reviewToggleButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.reviewToggleButton:hover {
+  background-color: rgba(37, 99, 235, 0.05);
+  transform: translateY(-2px);
+}
+
+/* Responsive para los botones */
+@media (max-width: 768px) {
+  .reviewToggleArea {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .reviewToggleButton {
+    width: 100%;
+  }
+}
+
 .sendReviewButton svg {
   margin-right: 6px;
 }
