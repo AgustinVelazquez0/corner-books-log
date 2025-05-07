@@ -8,7 +8,8 @@ import BookDetail from "./pages/BookDetail";
 import Register from "./pages/Register";
 import Account from "./pages/Account";
 import SearchResults from "./pages/SearchResults";
-import Login from "./pages/Login"; // Asumiendo que tienes este componente
+import Login from "./pages/Login";
+import Inicio from "../src/pages/Inicio";
 import "./App.css";
 
 // Importar los providers
@@ -27,7 +28,7 @@ function App() {
               <main className="content">
                 <AuthRouteGuard>
                   <Routes>
-                    <Route path="/" element={<Catalogo />} />
+                    <Route path="/" element={<Inicio />} />
                     <Route path="/catalogo" element={<Catalogo />} />
                     <Route path="/book/:id" element={<BookDetail />} />
                     <Route path="/register" element={<Register />} />
