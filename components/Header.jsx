@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import styles from "../styles/Header.module.css";
 import { useBookCategory } from "../context/useBookCategory";
 import { useBookAuthor } from "../context/useBookAuthor";
+import { useAuth } from "../context/AuthContext"; // Importar el contexto de autenticación
 import {
   Book,
   Search,
@@ -13,11 +14,14 @@ import {
   Filter,
   BookOpen,
   RefreshCcw,
+  LogIn,
+  UserPlus,
+  LogOut,
 } from "lucide-react";
-import books from "../src/data/books.json";
 
 const Header = () => {
   const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth(); // Obtener estado de autenticación
 
   // Estados para manejo de UI
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -26,6 +30,10 @@ const Header = () => {
   const [isAuthorDropdownVisible, setIsAuthorDropdownVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+
+  // Estados para categorías y autores obtenidos del backend
+  const [uniqueCategories, setUniqueCategories] = useState([]);
+  const [uniqueAuthors, setUniqueAuthors] = useState([]);
 
   // Referencias para cerrar los dropdowns al hacer clic fuera
   const categoryDropdownRef = useRef(null);
@@ -36,11 +44,33 @@ const Header = () => {
   const { selectedCategory, setSelectedCategory } = useBookCategory();
   const { selectedAuthor, setSelectedAuthor } = useBookAuthor();
 
-  // Extraer categorías y autores únicos del JSON de libros
-  const uniqueCategories = [
-    ...new Set(books.map((book) => book.category)),
-  ].sort();
-  const uniqueAuthors = [...new Set(books.map((book) => book.author))].sort();
+  // Fetch para obtener categorías y autores del backend
+  useEffect(() => {
+    // Obtener categorías
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("/api/books/categories");
+        const data = await response.json();
+        setUniqueCategories(data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    // Obtener autores
+    const fetchAuthors = async () => {
+      try {
+        const response = await fetch("/api/books/authors");
+        const data = await response.json();
+        setUniqueAuthors(data);
+      } catch (error) {
+        console.error("Error fetching authors:", error);
+      }
+    };
+
+    fetchCategories();
+    fetchAuthors();
+  }, []);
 
   // Manejar clics fuera de los dropdowns
   useEffect(() => {
@@ -97,9 +127,7 @@ const Header = () => {
   // Nueva función para realizar la búsqueda
   const handleSearch = () => {
     if (searchQuery.trim()) {
-      // Navegar a la página de resultados de búsqueda con el query como parámetro
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-      // También cerramos el menú móvil si está abierto
       setIsMenuOpen(false);
     }
   };
@@ -116,6 +144,13 @@ const Header = () => {
     setSelectedCategory(null);
     setSelectedAuthor(null);
     setSearchQuery("");
+  };
+
+  // Función para manejar el cierre de sesión
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+    setIsMenuOpen(false);
   };
 
   return (
@@ -193,13 +228,43 @@ const Header = () => {
                 <span>Catálogo</span>
               </Link>
             </li>
-            <li className={styles.navItem}>
-              {/* Link a Mi Cuenta */}
-              <Link to="/account" className={styles.navLink}>
-                <User size={18} />
-                <span>Mi Cuenta</span>
-              </Link>
-            </li>
+
+            {/* Mostrar diferentes opciones según estado de autenticación */}
+            {isAuthenticated ? (
+              <>
+                <li className={styles.navItem}>
+                  {/* Link a Mi Cuenta */}
+                  <Link to="/account" className={styles.navLink}>
+                    <User size={18} />
+                    <span>Mi Cuenta</span>
+                  </Link>
+                </li>
+                <li className={styles.navItem}>
+                  {/* Botón de cerrar sesión */}
+                  <button onClick={handleLogout} className={styles.navLink}>
+                    <LogOut size={18} />
+                    <span>Cerrar Sesión</span>
+                  </button>
+                </li>
+              </>
+            ) : (
+              <>
+                <li className={styles.navItem}>
+                  {/* Link a Login */}
+                  <Link to="/login" className={styles.navLink}>
+                    <LogIn size={18} />
+                    <span>Iniciar Sesión</span>
+                  </Link>
+                </li>
+                <li className={styles.navItem}>
+                  {/* Link a Register */}
+                  <Link to="/register" className={styles.navLink}>
+                    <UserPlus size={18} />
+                    <span>Registrarse</span>
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
 
           {/* Filtros */}

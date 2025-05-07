@@ -1,15 +1,31 @@
 import { useParams, useNavigate } from "react-router-dom";
-import books from "../data/books.json";
+import { useState, useEffect } from "react";
 import styles from "../../styles/BookDetail.module.css";
 import { Star } from "lucide-react";
 
 const BookDetail = () => {
-  const { id } = useParams(); // ✅ AHORA se usa useParams
+  const { id } = useParams(); // ✅ Usamos el id que viene desde los parámetros de la URL
   const navigate = useNavigate();
+  const [book, setBook] = useState(null); // Estado para el libro
+  const [loading, setLoading] = useState(true); // Estado para manejar la carga
 
-  const book = books.find((b) => String(b.id) === String(id)); // ✅ AHORA se usa books
+  useEffect(() => {
+    // Usamos fetch para obtener el libro por su ID desde el backend
+    fetch(`http://localhost:5000/api/libros/${id}`) // Esta es la URL que estamos usando en el backend local
+      .then((response) => response.json())
+      .then((data) => {
+        setBook(data); // Cuando recibimos el libro, lo seteamos en el estado
+        setLoading(false); // Y cambiamos el estado de loading
+      })
+      .catch((error) => {
+        console.error("Error al cargar el libro:", error);
+        setLoading(false); // En caso de error, también cambiamos el estado de loading
+      });
+  }, [id]); // El efecto se dispara cuando cambia el id
 
-  if (!book) return <p>Libro no encontrado.</p>;
+  if (loading) return <p>Cargando...</p>; // Mientras se carga el libro, mostramos un mensaje de carga
+
+  if (!book) return <p>Libro no encontrado.</p>; // Si no encontramos el libro, mostramos este mensaje
 
   const stars = [...Array(5)].map((_, i) => (
     <Star

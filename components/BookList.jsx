@@ -1,37 +1,48 @@
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useBookCategory } from "../context/useBookCategory";
 import { useBookAuthor } from "../context/useBookAuthor";
 import BookCard from "./BookCard";
 import styles from "../styles/BookList.module.css";
-import defaultBooks from "../src/data/books.json";
 
-const BookList = ({ books }) => {
+const BookList = () => {
   const { selectedCategory } = useBookCategory();
   const { selectedAuthor } = useBookAuthor();
-
   const scrollRef = useRef(null);
 
-  // Usar los libros pasados como prop si existen, de lo contrario usar los libros por defecto
-  const booksToUse = books || defaultBooks;
+  // ✅ Estado local para guardar los libros traídos desde el backend
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Aplicar filtros solo si no se reciben libros específicos como prop
-  let filteredBooks = booksToUse;
+  // ✅ Traer los libros desde el backend
+  useEffect(() => {
+    fetch("http://localhost:5000/books")
+      .then((res) => res.json())
+      .then((data) => {
+        setBooks(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error al cargar libros:", err);
+        setLoading(false);
+      });
+  }, []);
 
-  if (!books) {
-    // Solo aplicar filtros adicionales si estamos usando los libros por defecto
-    if (selectedCategory) {
-      filteredBooks = filteredBooks.filter(
-        (book) => book.category === selectedCategory
-      );
-    }
+  // ✅ Aplicar filtros
+  let filteredBooks = books;
 
-    if (selectedAuthor) {
-      filteredBooks = filteredBooks.filter(
-        (book) => book.author === selectedAuthor
-      );
-    }
+  if (selectedCategory) {
+    filteredBooks = filteredBooks.filter(
+      (book) => book.category === selectedCategory
+    );
   }
 
+  if (selectedAuthor) {
+    filteredBooks = filteredBooks.filter(
+      (book) => book.author === selectedAuthor
+    );
+  }
+
+  // ✅ Scroll lateral
   const scroll = (direction) => {
     if (scrollRef.current) {
       const scrollAmount = scrollRef.current.clientWidth;
@@ -42,14 +53,16 @@ const BookList = ({ books }) => {
     }
   };
 
-  // Determinar el título basado en si estamos mostrando resultados de búsqueda o libros recomendados
-  const listTitle = books ? "Resultados de búsqueda" : "Libros Recomendados";
+  // ✅ Título estático por ahora
+  const listTitle = "Libros Recomendados";
 
   return (
     <section className={styles.bookList}>
       <h2 className={styles.title}>{listTitle}</h2>
 
-      {filteredBooks.length === 0 ? (
+      {loading ? (
+        <p className={styles.noResults}>Cargando libros...</p>
+      ) : filteredBooks.length === 0 ? (
         <div className={styles.noResults}>
           <p>No se encontraron libros con los filtros seleccionados.</p>
         </div>
@@ -65,7 +78,7 @@ const BookList = ({ books }) => {
           <div className={styles.scrollWrapper} ref={scrollRef}>
             <div className={styles.flexContainer}>
               {filteredBooks.map((book) => (
-                <div key={book.id} className={styles.flexItem}>
+                <div key={book._id} className={styles.flexItem}>
                   <BookCard {...book} />
                 </div>
               ))}

@@ -1,38 +1,29 @@
-import { useState, useEffect } from "react";
+// context/CommentProvider.jsx
+import React, { useState } from "react";
 import { CommentContext } from "./CommentContext";
+import { useAuth } from "./AuthContext"; // Importar useAuth
 
 export const CommentProvider = ({ children }) => {
   const [comments, setComments] = useState([]);
-
-  // Cargar los comentarios desde localStorage al iniciar
-  useEffect(() => {
-    const storedComments = JSON.parse(localStorage.getItem("comments"));
-    if (storedComments) {
-      setComments(storedComments);
-    }
-  }, []);
-
-  // Guardar los comentarios en localStorage cada vez que cambian
-  useEffect(() => {
-    if (comments.length > 0) {
-      localStorage.setItem("comments", JSON.stringify(comments));
-    } else {
-      localStorage.removeItem("comments"); // Eliminar localStorage si no hay comentarios
-    }
-  }, [comments]);
+  const { user, isAuthenticated } = useAuth(); // Obtener información del usuario autenticado
 
   const addComment = (text) => {
     const newComment = {
-      id: Date.now(),
+      id: Date.now().toString(),
       text,
+      createdAt: new Date(),
+      // Incluir información del autor si está autenticado
+      authorId: isAuthenticated ? user.id : null,
+      authorName: isAuthenticated ? user.name : "Usuario Anónimo",
     };
-    const updatedComments = [newComment, ...comments];
-    setComments(updatedComments);
+
+    setComments((prevComments) => [...prevComments, newComment]);
   };
 
-  const deleteComment = (id) => {
-    const updatedComments = comments.filter((c) => c.id !== id);
-    setComments(updatedComments);
+  const deleteComment = (commentId) => {
+    setComments((prevComments) =>
+      prevComments.filter((comment) => comment.id !== commentId)
+    );
   };
 
   return (

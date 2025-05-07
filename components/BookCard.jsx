@@ -8,7 +8,7 @@ import {
   ChevronUp,
   Send,
   Trash2,
-  MessageCircle, // Nuevo ícono para mostrar/ocultar reseñas
+  MessageCircle,
 } from "lucide-react";
 import styles from "../styles/BookCard.module.css";
 
@@ -28,14 +28,17 @@ const BookCard = ({
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
   const [reviews, setReviews] = useState([]);
-  const [showReviews, setShowReviews] = useState(false); // Nuevo estado para mostrar/ocultar reseñas
-  const [showReviewForm, setShowReviewForm] = useState(false); // Nuevo estado para mostrar/ocultar formulario
+  const [showReviews, setShowReviews] = useState(false);
+  const [showReviewForm, setShowReviewForm] = useState(false);
 
   const isAdmin = true;
 
+  // Fetch reviews from API
   useEffect(() => {
-    const storedReviews = JSON.parse(localStorage.getItem("bookReviews")) || [];
-    setReviews(storedReviews.filter((review) => review.id === id));
+    fetch(`/api/reviews/${id}`)
+      .then((response) => response.json())
+      .then((data) => setReviews(data))
+      .catch((error) => console.error("Error fetching reviews:", error));
   }, [id]);
 
   const isLongDescription = description.length > 150;
@@ -68,30 +71,35 @@ const BookCard = ({
       date: new Date().toISOString(),
     };
 
-    const existingReviews =
-      JSON.parse(localStorage.getItem("bookReviews")) || [];
-    const updatedReviews = [...existingReviews, newReview];
-    localStorage.setItem("bookReviews", JSON.stringify(updatedReviews));
-
-    setReviews([...reviews, newReview]);
-    alert("¡Gracias por tu reseña!");
-    setComment("");
-    setUserRating(0);
+    // Enviar reseña a la API
+    fetch(`/api/reviews/${id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newReview),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setReviews((prevReviews) => [...prevReviews, data]);
+        alert("¡Gracias por tu reseña!");
+        setComment("");
+        setUserRating(0);
+      })
+      .catch((error) => console.error("Error sending review:", error));
   };
 
   const handleDeleteReview = (reviewToDelete) => {
-    const updatedReviews = reviews.filter(
-      (review) => review.date !== reviewToDelete.date
-    );
-    setReviews(updatedReviews);
-
-    const allReviews = JSON.parse(localStorage.getItem("bookReviews")) || [];
-    const filteredReviews = allReviews.filter(
-      (review) => review.date !== reviewToDelete.date
-    );
-    localStorage.setItem("bookReviews", JSON.stringify(filteredReviews));
-
-    alert("Reseña eliminada");
+    fetch(`/api/reviews/${id}/${reviewToDelete.date}`, {
+      method: "DELETE",
+    })
+      .then(() => {
+        setReviews((prevReviews) =>
+          prevReviews.filter((review) => review.date !== reviewToDelete.date)
+        );
+        alert("Reseña eliminada");
+      })
+      .catch((error) => console.error("Error deleting review:", error));
   };
 
   return (
@@ -187,7 +195,7 @@ const BookCard = ({
         )}
       </div>
 
-      {/* Formulario de reseña (ahora condicionalmente visible) */}
+      {/* Formulario de reseña */}
       {showReviewForm && (
         <div className={styles.reviewSection}>
           <div className={styles.ratingInput}>
@@ -224,7 +232,7 @@ const BookCard = ({
         </div>
       )}
 
-      {/* Reseñas guardadas (ahora condicionalmente visibles) */}
+      {/* Reseñas guardadas */}
       {reviews.length > 0 && showReviews && (
         <div className={styles.reviewContainer}>
           <h4>Reseñas:</h4>
