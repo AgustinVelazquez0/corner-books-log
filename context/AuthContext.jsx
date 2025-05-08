@@ -11,17 +11,23 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Cargar el usuario al iniciar
+  // En el useEffect, modifica la función fetchUser para agregar logs de depuración:
+
   useEffect(() => {
     const fetchUser = async () => {
+      console.log("Iniciando verificación de token...");
       const token = localStorage.getItem("token");
+      console.log("Token en localStorage:", token ? "Existe" : "No existe");
+
       if (!token) {
         setLoading(false);
         return;
       }
 
       try {
+        console.log("Enviando solicitud al endpoint /users/me");
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/users/me`,
+          `${import.meta.env.VITE_API_URL}/api/users/me`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -29,16 +35,28 @@ export const AuthProvider = ({ children }) => {
           }
         );
 
+        console.log("Respuesta recibida:", response.status);
+
         if (response.ok) {
           const userData = await response.json();
+          console.log("Datos de usuario recibidos:", userData);
           setUser(userData);
           setIsAuthenticated(true);
         } else {
-          localStorage.removeItem("token");
+          console.log("Respuesta no exitosa:", response.status);
+          // No remover el token inmediatamente, intenta recuperar el mensaje de error
+          const errorData = await response.json().catch(() => ({}));
+          console.log("Mensaje de error:", errorData);
+
+          // Solo remover el token si es un error de autenticación (401)
+          if (response.status === 401) {
+            console.log("Eliminando token por error de autenticación");
+            localStorage.removeItem("token");
+          }
         }
       } catch (error) {
         console.error("Error al obtener usuario:", error);
-        localStorage.removeItem("token");
+        // No eliminar el token automáticamente, podría ser un error de red temporal
       } finally {
         setLoading(false);
       }
