@@ -65,7 +65,8 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{ user, loading, isAuthenticated, login, logout }}
     >
-      {children}
+      {/* Si loading es true, muestra el mensaje de carga, si no, muestra los children */}
+      {loading ? <p>Cargando autenticación...</p> : children}
     </AuthContext.Provider>
   );
 };
