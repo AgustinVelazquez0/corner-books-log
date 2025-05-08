@@ -430,7 +430,6 @@
 }
 
 .reviewRating {
-  display: flex;
   align-items: center;
 }
 
@@ -518,6 +517,7 @@
   transition: all 0.3s ease;
   box-shadow: var(--shadow-sm);
   cursor: pointer;
+  margin-right: 8px;
 }
 
 .downloadLink:hover,

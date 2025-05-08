@@ -43,12 +43,10 @@ const Inicio = () => {
       </section>
 
       <section className={styles.featuredSection}>
-        <h2>Libros Destacados</h2>
         <BookList books={featuredBooks} listTitle="Libros Mejor Valorados" />
       </section>
 
       <section className={styles.recentSection}>
-        <h2>Añadidos Recientemente</h2>
         <BookList books={recentBooks} listTitle="Últimas Incorporaciones" />
       </section>
     </div>

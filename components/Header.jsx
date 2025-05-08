@@ -4,6 +4,7 @@ import styles from "../styles/Header.module.css";
 import { useBookCategory } from "../context/useBookCategory";
 import { useBookAuthor } from "../context/useBookAuthor";
 import { useAuth } from "../context/AuthContext"; // Importar el contexto de autenticación
+import books from "../src/data/books.json"; // Importamos los datos de libros directamente
 import {
   Book,
   Search,
@@ -21,7 +22,7 @@ import {
 
 const Header = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, logout } = useAuth(); // Obtener estado de autenticación
+  const { isAuthenticated, logout } = useAuth(); // Obtener estado de autenticación
 
   // Estados para manejo de UI
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -31,7 +32,7 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
-  // Estados para categorías y autores obtenidos del backend
+  // Estados para categorías y autores obtenidos del JSON local
   const [uniqueCategories, setUniqueCategories] = useState([]);
   const [uniqueAuthors, setUniqueAuthors] = useState([]);
 
@@ -44,32 +45,23 @@ const Header = () => {
   const { selectedCategory, setSelectedCategory } = useBookCategory();
   const { selectedAuthor, setSelectedAuthor } = useBookAuthor();
 
-  // Fetch para obtener categorías y autores del backend
+  // Obtener categorías y autores directamente del JSON local
   useEffect(() => {
-    // Obtener categorías
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch("/api/books/categories");
-        const data = await response.json();
-        setUniqueCategories(data);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    };
+    try {
+      // Extraer categorías únicas
+      const categories = [...new Set(books.map((book) => book.category))]
+        .filter(Boolean)
+        .sort();
+      setUniqueCategories(categories);
 
-    // Obtener autores
-    const fetchAuthors = async () => {
-      try {
-        const response = await fetch("/api/books/authors");
-        const data = await response.json();
-        setUniqueAuthors(data);
-      } catch (error) {
-        console.error("Error fetching authors:", error);
-      }
-    };
-
-    fetchCategories();
-    fetchAuthors();
+      // Extraer autores únicos
+      const authors = [...new Set(books.map((book) => book.author))]
+        .filter(Boolean)
+        .sort();
+      setUniqueAuthors(authors);
+    } catch (error) {
+      console.error("Error al procesar categorías y autores:", error);
+    }
   }, []);
 
   // Manejar clics fuera de los dropdowns
@@ -117,11 +109,13 @@ const Header = () => {
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
     setIsCategoryDropdownVisible(false);
+    navigate("/catalogo");
   };
 
   const handleAuthorSelect = (author) => {
     setSelectedAuthor(author);
     setIsAuthorDropdownVisible(false);
+    navigate("/catalogo");
   };
 
   // Nueva función para realizar la búsqueda

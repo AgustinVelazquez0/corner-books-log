@@ -2,30 +2,32 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import styles from "../../styles/BookDetail.module.css";
 import { Star } from "lucide-react";
+import books from "../data/books.json"; // Importamos los datos directamente del JSON
 
 const BookDetail = () => {
-  const { id } = useParams(); // ✅ Usamos el id que viene desde los parámetros de la URL
+  const { id } = useParams();
   const navigate = useNavigate();
-  const [book, setBook] = useState(null); // Estado para el libro
-  const [loading, setLoading] = useState(true); // Estado para manejar la carga
+  const [book, setBook] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Usamos fetch para obtener el libro por su ID desde el backend
-    fetch(`http://localhost:5000/api/libros/${id}`) // Esta es la URL que estamos usando en el backend local
-      .then((response) => response.json())
-      .then((data) => {
-        setBook(data); // Cuando recibimos el libro, lo seteamos en el estado
-        setLoading(false); // Y cambiamos el estado de loading
-      })
-      .catch((error) => {
-        console.error("Error al cargar el libro:", error);
-        setLoading(false); // En caso de error, también cambiamos el estado de loading
-      });
-  }, [id]); // El efecto se dispara cuando cambia el id
+    try {
+      // Buscar el libro directamente en el archivo JSON local
+      const foundBook = books.find((book) => book.id.toString() === id);
 
-  if (loading) return <p>Cargando...</p>; // Mientras se carga el libro, mostramos un mensaje de carga
+      if (foundBook) {
+        setBook(foundBook);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Error al cargar el libro:", error);
+      setLoading(false);
+    }
+  }, [id]);
 
-  if (!book) return <p>Libro no encontrado.</p>; // Si no encontramos el libro, mostramos este mensaje
+  if (loading) return <p>Cargando...</p>;
+
+  if (!book) return <p>Libro no encontrado.</p>;
 
   const stars = [...Array(5)].map((_, i) => (
     <Star
@@ -39,7 +41,10 @@ const BookDetail = () => {
   return (
     <div className={styles.detailContainer}>
       <div className={styles.cover}>
-        <img src={book.coverImage} alt={`Portada de ${book.title}`} />
+        <img
+          src={book.coverImage || "/api/placeholder/180/270"}
+          alt={`Portada de ${book.title}`}
+        />
       </div>
       <div className={styles.info}>
         <h2 className={styles.title}>{book.title}</h2>

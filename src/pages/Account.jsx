@@ -1,7 +1,7 @@
-// src/pages/Account.jsx
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext"; // Importar useAuth
+import { useAuth } from "../../context/AuthContext";
+import styles from "../../styles/Account.module.css"; // Importar los estilos CSS Modules
 
 const Account = () => {
   const { user, loading, isAuthenticated, logout } = useAuth();
@@ -20,7 +20,11 @@ const Account = () => {
   };
 
   if (loading) {
-    return <p>Cargando...</p>;
+    return (
+      <div className={styles.loadingContainer}>
+        <p className={styles.loadingText}>Cargando...</p>
+      </div>
+    );
   }
 
   if (!isAuthenticated || !user) {
@@ -28,23 +32,25 @@ const Account = () => {
   }
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h2>Mi Cuenta</h2>
-      <p>Bienvenido, {user.name}!</p>
-      <p>Email: {user.email}</p>
+    <div className={styles.accountContainer}>
+      <div className={styles.accountHeader}>
+        <h2 className={styles.title}>Mi Cuenta</h2>
+        <p className={styles.welcome}>Bienvenido, {user.name}!</p>
+      </div>
 
-      <button
-        onClick={handleLogout}
-        style={{
-          backgroundColor: "#f44336",
-          color: "white",
-          padding: "10px 15px",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-          marginTop: "20px",
-        }}
-      >
+      <div className={styles.infoSection}>
+        <div className={styles.infoItem}>
+          <span className={styles.infoLabel}>Nombre:</span>
+          <span className={styles.infoValue}>{user.name}</span>
+        </div>
+
+        <div className={styles.infoItem}>
+          <span className={styles.infoLabel}>Email:</span>
+          <span className={styles.infoValue}>{user.email}</span>
+        </div>
+      </div>
+
+      <button onClick={handleLogout} className={styles.logoutButton}>
         Cerrar Sesión
       </button>
     </div>

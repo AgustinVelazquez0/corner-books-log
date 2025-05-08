@@ -88,7 +88,7 @@ const Login = () => {
         <button
           type="submit"
           style={{
-            backgroundColor: "#4CAF50",
+            backgroundColor: "#1130b8",
             color: "white",
             padding: "0.75rem",
             border: "none",
