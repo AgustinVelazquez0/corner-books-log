@@ -48,7 +48,13 @@ const Register = () => {
       const data = await response.json();
 
       if (response.ok) {
-        navigate("/login"); // ✅ Navegar a la ruta /register
+        // Registro exitoso
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+          navigate("/account");
+        } else {
+          navigate("/login");
+        }
       } else {
         setError(data.message || "Error al registrarse");
       }
