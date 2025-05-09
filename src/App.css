@@ -1,115 +1,125 @@
-/* Variables globales */
+/* Variables globales para colores y estilos consistentes */
 :root {
-  --primary-color: #3366cc;
-  --secondary-color: #f8f9fa;
-  --accent-color: #ff9800;
+  --primary-color: #3861fb;
+  --secondary-color: #ff6b6b;
+  --accent-color: #ffa400;
   --text-color: #333;
-  --light-gray: #e9ecef;
-  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --text-light: #666;
+  --bg-color: #f8f9fa;
+  --card-bg: #ffffff;
   --border-radius: 8px;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   --transition: all 0.3s ease;
 }
 
 /* Estilos base */
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  line-height: 1.6;
   color: var(--text-color);
-  background-color: #f5f7f9;
+  background-color: var(--bg-color);
+  line-height: 1.6;
 }
 
+/* Contenedor principal */
 #root {
   width: 100%;
-  max-width: 1440px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 0;
   text-align: left;
 }
 
-/* Estilos del contenedor principal */
 .app-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  width: 100%;
 }
 
-/* Estilos del contenido principal */
+/* Contenido principal */
 .content {
   flex: 1;
   width: 100%;
-  max-width: 1400px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 1rem;
-  background-color: white;
-  box-shadow: var(--box-shadow);
-  border-radius: var(--border-radius);
 }
 
-/* Responsive design */
-@media screen and (max-width: 768px) {
+/* Estilos responsivos */
+@media (max-width: 768px) {
   .content {
     padding: 0.75rem;
-    margin: 0 auto;
-    width: 100%;
-    border-radius: 0;
-  }
-
-  #root {
-    padding: 0;
   }
 }
 
-/* Estilos generales que pueden ser útiles */
-.section {
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background-color: white;
-  border-radius: var(--border-radius);
+@media (max-width: 480px) {
+  .content {
+    padding: 0.5rem;
+  }
 }
 
-.btn {
-  display: inline-block;
-  padding: 0.5rem 1rem;
+/* Estilos heredados modificados */
+.logo {
+  height: 3em;
+  padding: 0.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 1em var(--primary-color));
+}
+
+.logo.react:hover {
+  filter: drop-shadow(0 0 1em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+/* Elementos comunes */
+button,
+.button {
   background-color: var(--primary-color);
   color: white;
   border: none;
+  padding: 0.6rem 1.2rem;
   border-radius: var(--border-radius);
   cursor: pointer;
+  font-weight: 500;
   transition: var(--transition);
 }
 
-.btn:hover {
-  background-color: #2855aa;
+button:hover,
+.button:hover {
+  background-color: darken(var(--primary-color), 10%);
+  transform: translateY(-2px);
 }
 
-/* Personalización para componentes de libros */
-.book-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  margin-top: 1.5rem;
-  justify-content: center;
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: var(--transition);
 }
 
-.book-grid > * {
-  flex: 1 1 250px;
-  max-width: 300px;
-}
-
-@media screen and (max-width: 576px) {
-  .book-grid {
-    gap: 1rem;
-    justify-content: center;
-  }
-
-  .book-grid > * {
-    flex: 1 1 150px;
-    max-width: 200px;
-  }
+a:hover {
+  color: darken(var(--primary-color), 15%);
 }
