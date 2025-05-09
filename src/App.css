@@ -1,42 +1,115 @@
+/* Variables globales */
+:root {
+  --primary-color: #3366cc;
+  --secondary-color: #f8f9fa;
+  --accent-color: #ff9800;
+  --text-color: #333;
+  --light-gray: #e9ecef;
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --border-radius: 8px;
+  --transition: all 0.3s ease;
+}
+
+/* Estilos base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: var(--text-color);
+  background-color: #f5f7f9;
+}
+
 #root {
-  max-width: 1280px;
+  width: 100%;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: 0;
+  text-align: left;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Estilos del contenedor principal */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+/* Estilos del contenido principal */
+.content {
+  flex: 1;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem;
+  background-color: white;
+  box-shadow: var(--box-shadow);
+  border-radius: var(--border-radius);
+}
+
+/* Responsive design */
+@media screen and (max-width: 768px) {
+  .content {
+    padding: 0.75rem;
+    margin: 0 auto;
+    width: 100%;
+    border-radius: 0;
   }
-  to {
-    transform: rotate(360deg);
+
+  #root {
+    padding: 0;
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+/* Estilos generales que pueden ser útiles */
+.section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: white;
+  border-radius: var(--border-radius);
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn:hover {
+  background-color: #2855aa;
+}
+
+/* Personalización para componentes de libros */
+.book-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  justify-content: center;
+}
+
+.book-grid > * {
+  flex: 1 1 250px;
+  max-width: 300px;
+}
+
+@media screen and (max-width: 576px) {
+  .book-grid {
+    gap: 1rem;
+    justify-content: center;
   }
-}
 
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+  .book-grid > * {
+    flex: 1 1 150px;
+    max-width: 200px;
+  }
 }
