@@ -9,6 +9,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false); // 🆕 Estado para mostrar mensaje exitoso
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -33,6 +34,7 @@ const Register = () => {
     if (!validateForm()) return;
 
     setError(null);
+    setSuccess(false); // Reinicio del estado de éxito
     setLoading(true);
 
     try {
@@ -48,7 +50,7 @@ const Register = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Registro exitoso
+        setSuccess(true); // 🆕 Mostrar mensaje de éxito
         if (data.token) {
           localStorage.setItem("token", data.token);
           navigate("/account");
@@ -141,6 +143,10 @@ const Register = () => {
           {loading ? "Procesando..." : "Registrarme"}
         </button>
       </form>
+
+      {success && ( // 🆕 Mostrar mensaje solo si el registro fue exitoso
+        <div className={styles.successMessage}>¡Registro exitoso!</div>
+      )}
 
       <div className={styles.loginPrompt}>
         ¿Ya tienes cuenta?{" "}
