@@ -7,7 +7,7 @@
 }
 
 .hero {
-  background: (#3c3c3c);
+  background-color: black;
   padding: 3rem 1.5rem;
   text-align: center;
   border-radius: var(--border-radius);
