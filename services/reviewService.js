@@ -33,14 +33,19 @@ const reviewService = {
     }
 
     try {
-      // Asegúrate de enviar el bookId correctamente (se debe enviar el _id del libro, no un id numérico)
+      // Validación adicional para asegurarse de que bookId es un string
+      const bookIdStr = String(bookId); // Asegurarse de que bookId sea string
+      console.log("bookId después de conversión:", bookIdStr);
+
       const response = await authAxios.post(`${API_URL}/reviews`, {
-        bookId, // Enviamos el _id del libro (no el id numérico)
+        bookId: bookIdStr,
         rating,
         comment,
       });
       return response.data;
     } catch (error) {
+      // Mejor manejo de errores con detalles específicos
+      console.error("Error al crear la reseña:", error);
       throw error.response?.data || error.message;
     }
   },
@@ -56,6 +61,7 @@ const reviewService = {
       const response = await axios.get(`${API_URL}/reviews/book/${bookId}`);
       return response.data;
     } catch (error) {
+      console.error("Error al obtener reseñas:", error);
       throw error.response?.data || error.message;
     }
   },
@@ -73,6 +79,7 @@ const reviewService = {
       });
       return response.data;
     } catch (error) {
+      console.error("Error al actualizar la reseña:", error);
       throw error.response?.data || error.message;
     }
   },
@@ -87,6 +94,7 @@ const reviewService = {
       const response = await authAxios.delete(`${API_URL}/reviews/${reviewId}`);
       return response.data;
     } catch (error) {
+      console.error("Error al eliminar la reseña:", error);
       throw error.response?.data || error.message;
     }
   },
@@ -97,6 +105,7 @@ const reviewService = {
       const response = await authAxios.get(`${API_URL}/reviews/user`);
       return response.data;
     } catch (error) {
+      console.error("Error al obtener las reseñas del usuario:", error);
       throw error.response?.data || error.message;
     }
   },
