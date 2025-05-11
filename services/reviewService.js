@@ -1,7 +1,8 @@
 import axios from "axios";
 
 // Ajusta la URL base de la API según tu configuración
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = `${BASE_URL}/api`; // Añade /api aquí
 
 // Configurar axios para incluir el token en cada solicitud
 const authAxios = axios.create();
