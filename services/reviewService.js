@@ -34,7 +34,8 @@ const reviewService = {
 
     try {
       // Validación adicional para asegurarse de que bookId es un string
-      const bookIdStr = bookId.toString(); // convertirlo a cadena si es número
+      const bookIdStr = bookId; // Fuerza la conversión de bookId a string
+
       console.log("bookId después de conversión:", bookIdStr);
 
       // Luego lo envías como en tu código actual:
