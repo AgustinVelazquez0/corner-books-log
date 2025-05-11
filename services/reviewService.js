@@ -26,9 +26,15 @@ const reviewService = {
   createReview: async (bookId, rating, comment) => {
     console.log("API URL being used:", `${API_URL}/reviews`);
     console.log("bookId siendo enviado:", bookId, "tipo:", typeof bookId);
+
+    // Validación simple de los parámetros
+    if (!bookId || !rating || !comment) {
+      throw new Error("bookId, rating y comment son obligatorios.");
+    }
+
     try {
       const response = await authAxios.post(`${API_URL}/reviews`, {
-        bookId,
+        bookId, // Enviamos el número tal cual
         rating,
         comment,
       });
@@ -40,6 +46,10 @@ const reviewService = {
 
   // Obtener todas las reseñas de un libro
   getBookReviews: async (bookId) => {
+    if (!bookId) {
+      throw new Error("El bookId es obligatorio.");
+    }
+
     try {
       const response = await axios.get(`${API_URL}/reviews/book/${bookId}`);
       return response.data;
@@ -50,6 +60,10 @@ const reviewService = {
 
   // Actualizar una reseña
   updateReview: async (reviewId, rating, comment) => {
+    if (!reviewId || !rating || !comment) {
+      throw new Error("reviewId, rating y comment son obligatorios.");
+    }
+
     try {
       const response = await authAxios.put(`${API_URL}/reviews/${reviewId}`, {
         rating,
@@ -63,6 +77,10 @@ const reviewService = {
 
   // Eliminar una reseña
   deleteReview: async (reviewId) => {
+    if (!reviewId) {
+      throw new Error("El reviewId es obligatorio.");
+    }
+
     try {
       const response = await authAxios.delete(`${API_URL}/reviews/${reviewId}`);
       return response.data;
