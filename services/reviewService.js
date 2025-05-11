@@ -1,4 +1,5 @@
 import axios from "axios";
+import books from "../data/books.json";
 
 // Ajusta la URL base de la API según tu configuración
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -23,22 +24,24 @@ authAxios.interceptors.request.use(
 // Servicio para gestionar las reseñas
 const reviewService = {
   // Crear una nueva reseña
-  createReview: async (bookId, rating, comment) => {
-    console.log("API URL being used:", `${API_URL}/reviews`);
-    console.log("bookId siendo enviado:", bookId, "tipo:", typeof bookId);
+  createReview: async (bookTitle, rating, comment) => {
+    const book = books.find(
+      (b) => b.title.toLowerCase() === bookTitle.toLowerCase()
+    );
 
-    // Validación simple de los parámetros
-    if (!bookId || !rating || !comment) {
+    if (!book) {
+      throw new Error("Libro no encontrado.");
+    }
+
+    const bookIdStr = book._id;
+
+    console.log("ID encontrado desde books.json:", bookIdStr);
+
+    if (!bookIdStr || !rating || !comment) {
       throw new Error("bookId, rating y comment son obligatorios.");
     }
 
     try {
-      // Validación adicional para asegurarse de que bookId es un string
-      const bookIdStr = bookId;
-
-      console.log("bookId después de conversión:", bookIdStr);
-
-      // Luego lo envías como en tu código actual:
       const response = await authAxios.post(`${API_URL}/reviews`, {
         bookId: bookIdStr,
         rating,
@@ -47,7 +50,6 @@ const reviewService = {
 
       return response.data;
     } catch (error) {
-      // Mejor manejo de errores con detalles específicos
       console.error("Error al crear la reseña:", error);
       throw error.response?.data || error.message;
     }
