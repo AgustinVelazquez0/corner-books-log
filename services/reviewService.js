@@ -70,7 +70,7 @@ const reviewService = {
     try {
       console.log(`Obteniendo reseñas para el libro con ID: ${bookId}`);
       // Pasamos el ID tal cual sin modificar
-      const response = await axios.get(`${API_URL}/reviews/${bookId}`);
+      const response = await axios.get(`${API_URL}/reviews/book/${bookId}`);
       return response.data;
     } catch (error) {
       console.error("Error al obtener reseñas:", error);
