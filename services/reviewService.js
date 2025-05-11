@@ -24,6 +24,8 @@ authAxios.interceptors.request.use(
 const reviewService = {
   // Crear una nueva reseña
   createReview: async (bookId, rating, comment) => {
+    console.log({ bookId, rating, comment });
+
     if (!bookId || !rating || !comment) {
       throw new Error("bookId, rating y comment son obligatorios.");
     }
