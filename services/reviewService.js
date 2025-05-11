@@ -33,8 +33,14 @@ const reviewService = {
     // Asegurarse de que bookId sea un string
     const stringBookId = String(bookId); // Convertir bookId a string
 
-    // MODIFICACIÓN: Eliminar la validación que requiere un ObjectId de 24 caracteres
-    // Ya que estamos usando IDs propios del JSON local
+    console.log(
+      "ID recibido:",
+      bookId,
+      "Tipo:",
+      typeof bookId,
+      "Longitud:",
+      String(bookId).length
+    );
 
     try {
       const response = await authAxios.post(`${API_URL}/reviews`, {
