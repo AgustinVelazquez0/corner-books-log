@@ -12,7 +12,8 @@ import {
   User,
 } from "lucide-react";
 import styles from "../styles/BookCard.module.css";
-import { useAuth } from "../context/AuthContext"; // Importamos el contexto de autenticación
+import { useAuth } from "../context/AuthContext";
+import reviewService from "../services/reviewService"; // Importamos el servicio de reseñas
 
 const BookCard = ({
   id,
@@ -32,16 +33,32 @@ const BookCard = ({
   const [reviews, setReviews] = useState([]);
   const [showReviews, setShowReviews] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   // Obtenemos la información del usuario autenticado
   const { user, isAuthenticated } = useAuth();
-  const isAdmin = true;
+  const isAdmin = true; // Esta lógica deberías ajustarla según tu aplicación
 
-  // Cargamos las reseñas para este libro
+  // Cargamos las reseñas para este libro desde la API
   useEffect(() => {
-    const storedReviews = JSON.parse(localStorage.getItem("bookReviews")) || [];
-    setReviews(storedReviews.filter((review) => review.id === id));
-  }, [id]);
+    const fetchReviews = async () => {
+      try {
+        setIsLoading(true);
+        const data = await reviewService.getBookReviews(id);
+        setReviews(data);
+        setIsLoading(false);
+      } catch (err) {
+        console.error("Error al cargar reseñas:", err);
+        setError("No se pudieron cargar las reseñas");
+        setIsLoading(false);
+      }
+    };
+
+    if (showReviews) {
+      fetchReviews();
+    }
+  }, [id, showReviews]);
 
   // Cargamos el estado de favorito para este libro
   useEffect(() => {
@@ -106,50 +123,80 @@ const BookCard = ({
     setShowReviewForm(!showReviewForm);
   };
 
-  const handleSendReview = () => {
+  const handleSendReview = async () => {
     // Verificamos que el usuario esté autenticado
     if (!isAuthenticated || !user) {
       alert("Debes iniciar sesión para enviar una reseña");
       return;
     }
 
-    const newReview = {
-      id,
-      title,
-      userRating,
-      comment,
-      date: new Date().toISOString(),
-      // Añadimos los datos del usuario a la reseña
-      userId: user.id || "anonymous",
-      userName: user.name || "Usuario anónimo",
-      userEmail: user.email || "",
-    };
+    // Validamos que haya puntuación y comentario
+    if (userRating === 0 || comment.trim() === "") {
+      alert("Por favor, añade una puntuación y un comentario");
+      return;
+    }
 
-    const existingReviews =
-      JSON.parse(localStorage.getItem("bookReviews")) || [];
-    const updatedReviews = [...existingReviews, newReview];
-    localStorage.setItem("bookReviews", JSON.stringify(updatedReviews));
+    try {
+      setIsLoading(true);
+      // Enviamos la reseña a la API
+      const response = await reviewService.createReview(
+        id,
+        userRating,
+        comment
+      );
 
-    setReviews([...reviews, newReview]);
-    alert("¡Gracias por tu reseña!");
-    setComment("");
-    setUserRating(0);
-    setShowReviewForm(false); // Ocultamos el formulario después de enviar
+      // Actualizamos la lista de reseñas en el estado
+      const newReview = response.review;
+      setReviews([...reviews, newReview]);
+
+      // Limpiamos el formulario
+      setComment("");
+      setUserRating(0);
+      setShowReviewForm(false);
+      setIsLoading(false);
+
+      alert("¡Gracias por tu reseña!");
+    } catch (err) {
+      console.error("Error al enviar la reseña:", err);
+      setError(err.message || "No se pudo enviar la reseña");
+      setIsLoading(false);
+      alert(
+        "Error al enviar la reseña: " +
+          (err.message || "Inténtalo de nuevo más tarde")
+      );
+    }
   };
 
-  const handleDeleteReview = (reviewToDelete) => {
-    const updatedReviews = reviews.filter(
-      (review) => review.date !== reviewToDelete.date
-    );
-    setReviews(updatedReviews);
+  const handleDeleteReview = async (reviewId) => {
+    if (!isAuthenticated || !user) {
+      alert("Necesitas iniciar sesión para realizar esta acción");
+      return;
+    }
 
-    const allReviews = JSON.parse(localStorage.getItem("bookReviews")) || [];
-    const filteredReviews = allReviews.filter(
-      (review) => review.date !== reviewToDelete.date
-    );
-    localStorage.setItem("bookReviews", JSON.stringify(filteredReviews));
+    if (confirm("¿Estás seguro de que quieres eliminar esta reseña?")) {
+      try {
+        setIsLoading(true);
+        // Llamamos a la API para eliminar la reseña
+        await reviewService.deleteReview(reviewId);
 
-    alert("Reseña eliminada");
+        // Actualizamos la lista de reseñas en el estado
+        const updatedReviews = reviews.filter(
+          (review) => review._id !== reviewId
+        );
+        setReviews(updatedReviews);
+
+        setIsLoading(false);
+        alert("Reseña eliminada correctamente");
+      } catch (err) {
+        console.error("Error al eliminar la reseña:", err);
+        setError(err.message || "No se pudo eliminar la reseña");
+        setIsLoading(false);
+        alert(
+          "Error al eliminar la reseña: " +
+            (err.message || "Inténtalo de nuevo más tarde")
+        );
+      }
+    }
   };
 
   return (
@@ -235,14 +282,12 @@ const BookCard = ({
           {showReviewForm ? "Cancelar reseña" : "Escribir reseña"}
         </button>
 
-        {reviews.length > 0 && (
-          <button onClick={toggleReviews} className={styles.reviewToggleButton}>
-            <MessageCircle size={16} style={{ marginRight: "5px" }} />
-            {showReviews
-              ? "Ocultar reseñas"
-              : `Ver reseñas (${reviews.length})`}
-          </button>
-        )}
+        <button onClick={toggleReviews} className={styles.reviewToggleButton}>
+          <MessageCircle size={16} style={{ marginRight: "5px" }} />
+          {showReviews
+            ? "Ocultar reseñas"
+            : `Ver reseñas${reviews.length > 0 ? ` (${reviews.length})` : ""}`}
+        </button>
       </div>
 
       {/* Formulario de reseña - ahora verificando autenticación */}
@@ -279,58 +324,80 @@ const BookCard = ({
           <button
             onClick={handleSendReview}
             className={styles.sendReviewButton}
-            disabled={userRating === 0 || comment.trim() === ""}
+            disabled={userRating === 0 || comment.trim() === "" || isLoading}
           >
-            <Send size={16} style={{ marginRight: "4px" }} />
-            Enviar reseña
+            {isLoading ? (
+              "Enviando..."
+            ) : (
+              <>
+                <Send size={16} style={{ marginRight: "4px" }} />
+                Enviar reseña
+              </>
+            )}
           </button>
         </div>
       )}
 
-      {/* Reseñas guardadas - ahora con nombre de usuario */}
-      {reviews.length > 0 && showReviews && (
+      {/* Mostrar mensaje de error si existe */}
+      {error && <p className={styles.errorMessage}>{error}</p>}
+
+      {/* Reseñas cargadas desde la API */}
+      {showReviews && (
         <div className={styles.reviewContainer}>
           <h4>Reseñas:</h4>
-          <div className={styles.reviews}>
-            {reviews.map((review, index) => (
-              <div key={index} className={styles.review}>
-                <div className={styles.reviewHeader}>
-                  <div className={styles.reviewUserInfo}>
-                    <User size={14} />
-                    <span className={styles.reviewUserName}>
-                      {review.userName || "Usuario anónimo"}
+
+          {isLoading && <p>Cargando reseñas...</p>}
+
+          {!isLoading && reviews.length === 0 && (
+            <p className={styles.noReviews}>
+              No hay reseñas todavía. ¡Sé el primero en opinar!
+            </p>
+          )}
+
+          {!isLoading && reviews.length > 0 && (
+            <div className={styles.reviews}>
+              {reviews.map((review) => (
+                <div key={review._id} className={styles.review}>
+                  <div className={styles.reviewHeader}>
+                    <div className={styles.reviewUserInfo}>
+                      <User size={14} />
+                      <span className={styles.reviewUserName}>
+                        {review.username || "Usuario anónimo"}
+                      </span>
+                    </div>
+                    <span className={styles.reviewDate}>
+                      {new Date(review.createdAt).toLocaleDateString()}
                     </span>
                   </div>
-                  <span className={styles.reviewDate}>
-                    {new Date(review.date).toLocaleDateString()}
-                  </span>
+
+                  <div className={styles.reviewRating}>
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        size={16}
+                        fill={i < review.rating ? "#ffc107" : "none"}
+                        color={i < review.rating ? "#ffc107" : "#d1d1d1"}
+                      />
+                    ))}
+                  </div>
+
+                  <p className={styles.reviewComment}>{review.comment}</p>
+
+                  {/* Mostrar botón de eliminar solo si es admin o es el autor de la reseña */}
+                  {(isAdmin || (user && user.id === review.userId)) && (
+                    <button
+                      onClick={() => handleDeleteReview(review._id)}
+                      className={styles.deleteReviewButton}
+                      disabled={isLoading}
+                    >
+                      <Trash2 size={16} />
+                      Eliminar
+                    </button>
+                  )}
                 </div>
-
-                <div className={styles.reviewRating}>
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      size={16}
-                      fill={i < review.userRating ? "#ffc107" : "none"}
-                      color={i < review.userRating ? "#ffc107" : "#d1d1d1"}
-                    />
-                  ))}
-                </div>
-
-                <p className={styles.reviewComment}>{review.comment}</p>
-
-                {isAdmin && (
-                  <button
-                    onClick={() => handleDeleteReview(review)}
-                    className={styles.deleteReviewButton}
-                  >
-                    <Trash2 size={16} />
-                    Eliminar
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
