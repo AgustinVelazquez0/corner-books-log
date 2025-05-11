@@ -31,22 +31,29 @@ const reviewService = {
     }
 
     try {
-      // Usamos directamente el ID tal como viene, el backend se encargará de validarlo
+      // Enviamos los datos tal cual, sin modificar el ID
       const response = await authAxios.post(`${API_URL}/reviews`, {
-        bookId,
-        rating,
+        bookId: String(bookId), // Convertimos a string para consistencia
+        rating: Number(rating), // Aseguramos que sea número
         comment,
       });
 
       return response.data;
     } catch (error) {
       console.error("Error al crear la reseña:", error);
-      if (error.response?.status === 404) {
-        throw new Error("El libro no fue encontrado. Verifica el ID.");
-      } else if (error.response?.status === 401) {
-        throw new Error("Debes iniciar sesión para dejar una reseña.");
+
+      // Manejo detallado de errores específicos
+      if (error.response) {
+        if (error.response.status === 404) {
+          throw new Error("El libro no fue encontrado. Verifica el ID.");
+        } else if (error.response.status === 401) {
+          throw new Error("Debes iniciar sesión para dejar una reseña.");
+        } else if (error.response.data && error.response.data.error) {
+          throw new Error(error.response.data.error);
+        }
       }
-      throw error.response?.data || new Error(error.message);
+
+      throw new Error("Error al enviar la reseña. Intenta de nuevo más tarde.");
     }
   },
 
@@ -58,15 +65,20 @@ const reviewService = {
 
     try {
       console.log(`Obteniendo reseñas para el libro con ID: ${bookId}`);
+      // Pasamos el ID tal cual sin modificar
       const response = await axios.get(`${API_URL}/reviews/${bookId}`);
       return response.data;
     } catch (error) {
       console.error("Error al obtener reseñas:", error);
+
+      // Si el error es 404, devolvemos un array vacío en lugar de lanzar error
       if (error.response?.status === 404) {
-        // No es un error crítico si no hay reseñas
         return { reviews: [] };
       }
-      throw error.response?.data || new Error(error.message);
+
+      throw new Error(
+        "Error al cargar las reseñas. Intenta de nuevo más tarde."
+      );
     }
   },
 
@@ -78,13 +90,15 @@ const reviewService = {
 
     try {
       const response = await authAxios.put(`${API_URL}/reviews/${reviewId}`, {
-        rating,
+        rating: Number(rating),
         comment,
       });
       return response.data;
     } catch (error) {
       console.error("Error al actualizar la reseña:", error);
-      throw error.response?.data || new Error(error.message);
+      throw new Error(
+        "Error al actualizar la reseña. Intenta de nuevo más tarde."
+      );
     }
   },
 
@@ -99,7 +113,9 @@ const reviewService = {
       return response.data;
     } catch (error) {
       console.error("Error al eliminar la reseña:", error);
-      throw error.response?.data || new Error(error.message);
+      throw new Error(
+        "Error al eliminar la reseña. Intenta de nuevo más tarde."
+      );
     }
   },
 
@@ -110,7 +126,9 @@ const reviewService = {
       return response.data;
     } catch (error) {
       console.error("Error al obtener las reseñas del usuario:", error);
-      throw error.response?.data || new Error(error.message);
+      throw new Error(
+        "Error al cargar tus reseñas. Intenta de nuevo más tarde."
+      );
     }
   },
 };
