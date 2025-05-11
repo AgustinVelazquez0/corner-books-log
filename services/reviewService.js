@@ -3,9 +3,9 @@ import books from "../data/books.json";
 
 // Ajusta la URL base de la API según tu configuración
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-const API_URL = `${BASE_URL}/api`; // Añade /api aquí
+const API_URL = `${BASE_URL}/api`; // Aseguramos el prefijo /api
 
-// Configurar axios para incluir el token en cada solicitud
+// Axios personalizado que incluye el token JWT en las solicitudes
 const authAxios = axios.create();
 
 authAxios.interceptors.request.use(
@@ -16,14 +16,12 @@ authAxios.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Servicio para gestionar las reseñas
+// Servicio para manejar reseñas
 const reviewService = {
-  // Crear una nueva reseña
+  // Crear una reseña
   createReview: async (bookTitle, rating, comment) => {
     const book = books.find(
       (b) => b.title.toLowerCase() === bookTitle.toLowerCase()
@@ -33,21 +31,18 @@ const reviewService = {
       throw new Error("Libro no encontrado.");
     }
 
-    const bookIdStr = book._id;
+    const bookId = book._id;
 
-    console.log("ID encontrado desde books.json:", bookIdStr);
-
-    if (!bookIdStr || !rating || !comment) {
+    if (!bookId || !rating || !comment) {
       throw new Error("bookId, rating y comment son obligatorios.");
     }
 
     try {
       const response = await authAxios.post(`${API_URL}/reviews`, {
-        bookId: bookIdStr,
+        bookId,
         rating,
         comment,
       });
-
       return response.data;
     } catch (error) {
       console.error("Error al crear la reseña:", error);
@@ -55,14 +50,13 @@ const reviewService = {
     }
   },
 
-  // Obtener todas las reseñas de un libro
+  // Obtener reseñas de un libro
   getBookReviews: async (bookId) => {
     if (!bookId) {
       throw new Error("El bookId es obligatorio.");
     }
 
     try {
-      // Al obtener reseñas, pasamos el _id del libro
       const response = await axios.get(`${API_URL}/reviews/book/${bookId}`);
       return response.data;
     } catch (error) {
@@ -71,7 +65,7 @@ const reviewService = {
     }
   },
 
-  // Actualizar una reseña
+  // Actualizar una reseña existente
   updateReview: async (reviewId, rating, comment) => {
     if (!reviewId || !rating || !comment) {
       throw new Error("reviewId, rating y comment son obligatorios.");
@@ -104,7 +98,7 @@ const reviewService = {
     }
   },
 
-  // Obtener las reseñas del usuario actual
+  // Obtener reseñas del usuario autenticado
   getUserReviews: async () => {
     try {
       const response = await authAxios.get(`${API_URL}/reviews/user`);
