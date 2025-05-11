@@ -34,14 +34,16 @@ const reviewService = {
 
     try {
       // Validación adicional para asegurarse de que bookId es un string
-      const bookIdStr = String(bookId); // Asegurarse de que bookId sea string
+      const bookIdStr = bookId.toString(); // convertirlo a cadena si es número
       console.log("bookId después de conversión:", bookIdStr);
 
+      // Luego lo envías como en tu código actual:
       const response = await authAxios.post(`${API_URL}/reviews`, {
         bookId: bookIdStr,
         rating,
         comment,
       });
+
       return response.data;
     } catch (error) {
       // Mejor manejo de errores con detalles específicos
