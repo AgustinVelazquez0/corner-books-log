@@ -1,11 +1,10 @@
 import axios from "axios";
-import books from "../data/books.json";
 
 // Ajusta la URL base de la API según tu configuración
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-const API_URL = `${BASE_URL}/api`; // Aseguramos el prefijo /api
+const API_URL = `${BASE_URL}/api`;
 
-// Axios personalizado que incluye el token JWT en las solicitudes
+// Configurar axios para incluir el token en cada solicitud
 const authAxios = axios.create();
 
 authAxios.interceptors.request.use(
@@ -16,23 +15,15 @@ authAxios.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    return Promise.reject(error);
+  }
 );
 
-// Servicio para manejar reseñas
+// Servicio para gestionar las reseñas
 const reviewService = {
-  // Crear una reseña
-  createReview: async (bookTitle, rating, comment) => {
-    const book = books.find(
-      (b) => b.title.toLowerCase() === bookTitle.toLowerCase()
-    );
-
-    if (!book) {
-      throw new Error("Libro no encontrado.");
-    }
-
-    const bookId = book._id;
-
+  // Crear una nueva reseña
+  createReview: async (bookId, rating, comment) => {
     if (!bookId || !rating || !comment) {
       throw new Error("bookId, rating y comment son obligatorios.");
     }
@@ -43,6 +34,7 @@ const reviewService = {
         rating,
         comment,
       });
+
       return response.data;
     } catch (error) {
       console.error("Error al crear la reseña:", error);
@@ -50,7 +42,7 @@ const reviewService = {
     }
   },
 
-  // Obtener reseñas de un libro
+  // Obtener todas las reseñas de un libro
   getBookReviews: async (bookId) => {
     if (!bookId) {
       throw new Error("El bookId es obligatorio.");
@@ -65,7 +57,7 @@ const reviewService = {
     }
   },
 
-  // Actualizar una reseña existente
+  // Actualizar una reseña
   updateReview: async (reviewId, rating, comment) => {
     if (!reviewId || !rating || !comment) {
       throw new Error("reviewId, rating y comment son obligatorios.");
@@ -98,7 +90,7 @@ const reviewService = {
     }
   },
 
-  // Obtener reseñas del usuario autenticado
+  // Obtener las reseñas del usuario actual
   getUserReviews: async () => {
     try {
       const response = await authAxios.get(`${API_URL}/reviews/user`);
