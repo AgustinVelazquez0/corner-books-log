@@ -24,6 +24,7 @@ authAxios.interceptors.request.use(
 const reviewService = {
   // Crear una nueva reseña
   createReview: async (bookId, rating, comment) => {
+    console.log("API URL being used:", `${API_URL}/reviews`);
     try {
       const response = await authAxios.post(`${API_URL}/reviews`, {
         bookId,
