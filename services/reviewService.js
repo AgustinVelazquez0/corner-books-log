@@ -40,7 +40,7 @@ const reviewService = {
 
     try {
       const response = await authAxios.post(`${API_URL}/reviews`, {
-        bookId,
+        bookId: stringBookId,
         rating,
         comment,
       });

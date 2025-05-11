@@ -1,6 +1,7 @@
 [
   {
     "id": 1,
+    "_id": "663fb2c84506b1577a80405e",
     "title": "El Libro Rojo",
     "author": "Carl Gustav Jung",
     "description": "El Libro Rojo de Carl Gustav Jung es un libro profético, pero no en el sentido banal de una anticipación sino como una advertencia acerca de la condición de todo ser humano, co-creador de la propia vida individual y el espíritu de su época. El libro es un viaje a través de la psique humana, donde Jung explora sus propios sueños, visiones y experiencias espirituales. A través de ilustraciones y textos poéticos, Jung presenta su búsqueda de significado y su comprensión del inconsciente colectivo.",
@@ -14,6 +15,7 @@
   },
   {
     "id": 2,
+    "_id": "663fb2c84506b1577a80406e",
     "title": "1984",
     "author": "George Orwell",
     "description": "Una novela distópica que explora la vigilancia y el totalitarismo. Ambientada en un futuro donde un régimen totalitario controla cada aspecto de la vida humana, incluyendo el pensamiento. Winston Smith, el protagonista, comienza a cuestionar el sistema y busca formas de rebelión, con consecuencias devastadoras.",
@@ -27,6 +29,7 @@
   },
   {
     "id": 3,
+    "_id": "663fb2c84506b1577a80407e",
     "title": "Infocracia",
     "author": "Byung-Chul Han",
     "description": "Llamamos 'régimen de la información' a la forma de dominio en la que la información y su procesamiento mediante algoritmos e inteligencia artificial determinan de modo decisivo los procesos sociales, económicos y politicos. A diferencia del régimen de la disciplina, no se explotan cuerpos y energías, sino información y datos.",
@@ -40,6 +43,7 @@
   },
   {
     "id": 4,
+    "_id": "663fb2c84506b1577a80408e",
     "title": "Como ganar amigos e influir sobre las personas",
     "author": "Dale Carnegie",
     "description": "Un clásico que ofrece consejos prácticos sobre cómo mejorar las relaciones interpersonales y la comunicación. Carnegie comparte principios fundamentales para influir en los demás, ganar su confianza y mejorar la calidad de nuestras interacciones sociales. Un libro esencial para quienes buscan desarrollar habilidades sociales efectivas.",
@@ -53,6 +57,7 @@
   },
   {
     "id": 5,
+    "_id": "663fb2c84506b1577a80409e",
     "title": "La teoría sintergica",
     "author": "Jacobo Grinberg Zylberbaum",
     "description": "La teoría sintergica es un libro que explora la relación entre la conciencia y la realidad. El autor, Jacobo Grinberg Zylberbaum, presenta una teoría innovadora que busca entender cómo la percepción humana influye en la creación de la realidad. A través de una combinación de ciencia y divinidad, el libro invita a los lectores a reflexionar sobre su propia experiencia de vida y la conexión entre mente y universo.",
@@ -66,6 +71,7 @@
   },
   {
     "id": 6,
+    "_id": "663fb2c84506b1577a804010",
     "title": "Las 48 leyes del poder",
     "author": "Robert Greene",
     "description": "La estrategia, el poder, la seducción, la maestría de nuestras habilidades y las motivaciones psicológicas, sociales y culturales que guían nuestras decisiones cada día se presentan en libros amenos y aptos para triunfar en cualquier ámbito y conocer a profundidad nuestra naturaleza humana.",
@@ -79,6 +85,7 @@
   },
   {
     "id": 7,
+    "_id": "663fb2c84506b1577a804011",
     "title": "El hombre en busca de sentido",
     "author": "Viktor Frankl",
     "description": "Un libro que narra la experiencia del autor en un campo de concentración. A través de su sufrimiento, Frankl explora la búsqueda del sentido de la vida y cómo encontrar propósito incluso en las circunstancias más difíciles. La obra combina elementos de psicología y filosofía, ofreciendo una perspectiva única sobre la resiliencia humana y la importancia de encontrar significado en la vida.",
@@ -92,6 +99,7 @@
   },
   {
     "id": 8,
+    "_id": "663fb2c84506b1577a804012",
     "title": "Revelión en la granja",
     "author": "George Orwell",
     "description": "Una visión política que critica el totalitarismo y la corrupción del poder. A través de una granja donde los animales se rebelan contra sus dueños humanos, Orwell explora temas de opresión, propaganda y la traición de ideales. La obra es una reflexión sobre la naturaleza humana y la lucha por la libertad.",
