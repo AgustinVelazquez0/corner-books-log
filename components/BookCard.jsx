@@ -144,7 +144,8 @@ const BookCard = ({
         userRating,
         comment
       );
-
+      console.log("ID del libro enviado:", id);
+      console.log("Reseña enviada:", response);
       // Actualizamos la lista de reseñas en el estado
       const newReview = response.review;
       setReviews([...reviews, newReview]);
