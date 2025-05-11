@@ -33,8 +33,9 @@ const reviewService = {
     }
 
     try {
+      // Asegúrate de enviar el bookId correctamente (se debe enviar el _id del libro, no un id numérico)
       const response = await authAxios.post(`${API_URL}/reviews`, {
-        bookId, // Enviamos el número tal cual
+        bookId, // Enviamos el _id del libro (no el id numérico)
         rating,
         comment,
       });
@@ -51,6 +52,7 @@ const reviewService = {
     }
 
     try {
+      // Al obtener reseñas, pasamos el _id del libro
       const response = await axios.get(`${API_URL}/reviews/book/${bookId}`);
       return response.data;
     } catch (error) {
