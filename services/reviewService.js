@@ -34,7 +34,7 @@ const reviewService = {
 
     try {
       // Validación adicional para asegurarse de que bookId es un string
-      const bookIdStr = bookId; // Fuerza la conversión de bookId a string
+      const bookIdStr = bookId;
 
       console.log("bookId después de conversión:", bookIdStr);
 
