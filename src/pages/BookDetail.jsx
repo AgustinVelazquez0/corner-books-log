@@ -134,7 +134,6 @@ const BookDetail = () => {
           </a>
         )}
 
-        {/* Reseñas existentes */}
         <div className={styles.reviewsContainer}>
           <h3>Reseñas</h3>
           {loadingReviews ? (
@@ -145,7 +144,8 @@ const BookDetail = () => {
                 <div key={review._id} className={styles.reviewItem}>
                   <div className={styles.reviewHeader}>
                     <span className={styles.reviewAuthor}>
-                      {review.username || "Anónimo"}
+                      {/* Aquí está el cambio */}
+                      {review.user?.username || review.username || "Anónimo"}
                     </span>
                     <div className={styles.reviewRating}>
                       {[...Array(5)].map((_, i) => (
