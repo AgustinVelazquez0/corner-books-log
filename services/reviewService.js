@@ -37,7 +37,7 @@ const reviewService = {
     try {
       // Enviamos los datos tal cual, sin modificar el ID
       const response = await authAxios.post(`${API_URL}/reviews`, {
-        bookId: String(bookId), // Convertimos a string para consistencia
+        book: String(bookId), // Convertimos a string para consistencia
         rating: Number(rating), // Aseguramos que sea número
         comment,
       });
@@ -48,7 +48,11 @@ const reviewService = {
 
       // Manejo detallado de errores específicos
       if (error.response) {
-        if (error.response.status === 404) {
+        if (error.response.status === 409) {
+          throw new Error(
+            "Ya has escrito una reseña para este libro. Si deseas modificarla, usa la opción de editar."
+          );
+        } else if (error.response.status === 404) {
           throw new Error("El libro no fue encontrado. Verifica el ID.");
         } else if (error.response.status === 401) {
           throw new Error("Debes iniciar sesión para dejar una reseña.");
