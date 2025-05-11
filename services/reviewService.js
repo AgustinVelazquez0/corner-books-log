@@ -30,6 +30,14 @@ const reviewService = {
       throw new Error("bookId, rating y comment son obligatorios.");
     }
 
+    // Asegurarse de que bookId sea un string válido
+    const stringBookId = String(bookId); // Convertir bookId a string
+
+    // Verificar si bookId tiene un formato adecuado (debe tener 24 caracteres en caso de ObjectId)
+    if (!/^[a-fA-F0-9]{24}$/.test(stringBookId)) {
+      throw new Error("El bookId no es válido.");
+    }
+
     try {
       const response = await authAxios.post(`${API_URL}/reviews`, {
         bookId,
