@@ -101,9 +101,8 @@ const reviewService = {
     const mongoObjectId = convertToObjectId(bookId);
 
     try {
-      const response = await axios.get(
-        `${API_URL}/reviews/book/${mongoObjectId}`
-      );
+      const response = await axios.get(`${API_URL}/reviews/${mongoObjectId}`);
+
       return response.data;
     } catch (error) {
       console.error("Error al obtener reseñas:", error);
