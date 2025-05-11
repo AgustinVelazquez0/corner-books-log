@@ -25,6 +25,7 @@ const reviewService = {
   // Crear una nueva reseña
   createReview: async (bookId, rating, comment) => {
     console.log("API URL being used:", `${API_URL}/reviews`);
+    console.log("bookId siendo enviado:", bookId, "tipo:", typeof bookId);
     try {
       const response = await authAxios.post(`${API_URL}/reviews`, {
         bookId,
