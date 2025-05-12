@@ -55,29 +55,17 @@ const BookCard = ({
         effectiveId
       );
 
-      const data = await reviewService.getBookReviews(effectiveId);
+      const response = await reviewService.getBookReviews(effectiveId);
 
-      console.log("Reseñas cargadas:", data);
+      console.log("Respuesta completa de reviews:", response);
 
-      // Verificar que la respuesta sea un array
-      if (Array.isArray(data)) {
-        setReviews(data);
-        console.log(`Se encontraron ${data.length} reseñas para este libro`);
+      // Verificar si la respuesta contiene un array de reseñas
+      if (response.success && Array.isArray(response.data)) {
+        console.log(`Se encontraron ${response.data.length} reseñas`);
+        setReviews(response.data);
       } else {
-        console.warn("La respuesta no es un array:", data);
-        // Si la respuesta tiene una propiedad que contiene las reseñas
-        if (data && data.reviews && Array.isArray(data.reviews)) {
-          setReviews(data.reviews);
-          console.log(
-            `Se encontraron ${data.reviews.length} reseñas en data.reviews`
-          );
-        } else {
-          // Si no podemos identificar las reseñas, establecemos un array vacío
-          setReviews([]);
-          console.warn(
-            "No se pudo interpretar la respuesta de reseñas, estableciendo array vacío"
-          );
-        }
+        console.warn("Estructura de respuesta inesperada:", response);
+        setReviews([]);
       }
 
       setIsLoading(false);

@@ -63,7 +63,7 @@ export const createReview = async (reviewData) => {
 export const getBookReviews = async (bookId) => {
   try {
     const response = await axios.get(`${API_URL}/reviews/book/${bookId}`);
-    return response.data;
+    return response.data; // Devolver directamente la respuesta completa
   } catch (error) {
     console.error("Error al obtener reseñas del libro:", error);
     throw error.response?.data || error;
