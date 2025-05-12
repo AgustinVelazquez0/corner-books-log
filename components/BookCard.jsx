@@ -165,6 +165,8 @@ const BookCard = ({
     setError(null);
   };
 
+  // Reemplaza la función handleSendReview actual con esta versión corregida:
+
   const handleSendReview = async () => {
     // Verificamos que el usuario esté autenticado
     if (!isAuthenticated || !user) {
@@ -186,12 +188,15 @@ const BookCard = ({
       console.log("ID del libro para la reseña:", effectiveId);
       console.log("Título del libro:", title);
 
+      // Preparamos el objeto de datos para la reseña
+      const reviewData = {
+        bookId: effectiveId,
+        rating: userRating,
+        comment: comment,
+      };
+
       // Enviamos la reseña a la API usando el método actualizado
-      const response = await reviewService.createReview(
-        effectiveId, // Cambiado de id a effectiveId
-        userRating,
-        comment
-      );
+      const response = await reviewService.createReview(reviewData);
 
       console.log("Respuesta del servidor:", response);
 
