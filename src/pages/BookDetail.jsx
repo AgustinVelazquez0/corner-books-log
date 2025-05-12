@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import styles from "../../styles/BookDetail.module.css";
 import { Star } from "lucide-react";
-import books from "../data/books.json";
+// import books from "../data/books.json";
 import * as reviewService from "../../services/reviewService";
 
 const BookDetail = () => {
@@ -21,23 +21,23 @@ const BookDetail = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Cargar libro del JSON local
-        const foundBook = books.find((book) => book.id.toString() === id);
-        if (foundBook) {
-          setBook(foundBook);
+        // Cargar libro desde la API
+        const response = await fetch(
+          `https://library-back-end-9vgl.onrender.com/api/books/${id}`
+        );
+        if (!response.ok) {
+          throw new Error("No se pudo cargar el libro");
+        }
+        const bookData = await response.json();
+        setBook(bookData.data);
 
-          // Ahora usamos el ID de MongoDB que debería estar guardado en el libro
-          const mongoId = foundBook.mongoId || id; // Usar mongoId si existe, sino el ID de la ruta
-
-          // Cargar reseñas de la API usando el ID de MongoDB
-          try {
-            const reviewData = await reviewService.getBookReviews(mongoId);
-            console.log("Reseñas cargadas:", reviewData);
-            setReviews(reviewData.reviews || []);
-          } catch (reviewError) {
-            console.error("Error al cargar reseñas:", reviewError);
-            // No mostramos error si no hay reseñas, es normal para libros nuevos
-          }
+        // Cargar reseñas
+        try {
+          const reviewData = await reviewService.getBookReviews(id);
+          console.log("Reseñas cargadas:", reviewData);
+          setReviews(reviewData.data || []);
+        } catch (reviewError) {
+          console.error("Error al cargar reseñas:", reviewError);
         }
 
         setLoadingReviews(false);
