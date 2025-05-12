@@ -29,7 +29,7 @@ export const createReview = async (reviewData) => {
     const completeReviewData = {
       ...reviewData,
       userId: userData._id || "guest",
-      username: userData.username || "Usuario Anónimo",
+      username: userData.name || "Usuario Anónimo",
     };
 
     console.log("Datos de la reseña a enviar:", completeReviewData);
