@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import styles from "../../styles/BookDetail.module.css";
 import { Star } from "lucide-react";
 import books from "../data/books.json";
-import reviewService from "../../services/reviewService"; // Importar el servicio de reseñas
+import * as reviewService from "../../services/reviewService";
 
 const BookDetail = () => {
   const { id } = useParams();

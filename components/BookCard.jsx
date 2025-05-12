@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import styles from "../styles/BookCard.module.css";
 import { useAuth } from "../context/AuthContext";
-import reviewService from "../services/reviewService";
+import * as reviewService from "../services/reviewService";
 
 const BookCard = ({
   id,
