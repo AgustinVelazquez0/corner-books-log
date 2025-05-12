@@ -45,13 +45,38 @@ const BookCard = ({
     try {
       setIsLoading(true);
       setError(null);
+      console.log("Intentando cargar reseñas para el libro con ID:", id);
+
       const data = await reviewService.getBookReviews(id);
+
       console.log("Reseñas cargadas:", data);
-      setReviews(data);
+
+      // Verificar que la respuesta sea un array
+      if (Array.isArray(data)) {
+        setReviews(data);
+        console.log(`Se encontraron ${data.length} reseñas para este libro`);
+      } else {
+        console.warn("La respuesta no es un array:", data);
+        // Si la respuesta tiene una propiedad que contiene las reseñas
+        if (data && data.reviews && Array.isArray(data.reviews)) {
+          setReviews(data.reviews);
+          console.log(
+            `Se encontraron ${data.reviews.length} reseñas en data.reviews`
+          );
+        } else {
+          // Si no podemos identificar las reseñas, establecemos un array vacío
+          setReviews([]);
+          console.warn(
+            "No se pudo interpretar la respuesta de reseñas, estableciendo array vacío"
+          );
+        }
+      }
+
       setIsLoading(false);
     } catch (err) {
       console.error("Error al cargar reseñas:", err);
       setError("No se pudieron cargar las reseñas");
+      setReviews([]); // Aseguramos un estado válido incluso en caso de error
       setIsLoading(false);
     }
   };
@@ -143,6 +168,8 @@ const BookCard = ({
       setIsLoading(true);
       setError(null);
 
+      console.log("ID del libro para la reseña:", id);
+
       // Enviamos la reseña a la API
       const response = await reviewService.createReview(
         id,
@@ -164,13 +191,20 @@ const BookCard = ({
       setShowReviews(true);
 
       alert("¡Gracias por tu reseña!");
+      setIsLoading(false);
     } catch (err) {
       console.error("Error al enviar la reseña:", err);
-      setError(err.message || "No se pudo enviar la reseña");
+      setError(
+        typeof err === "string"
+          ? err
+          : err.message || "No se pudo enviar la reseña"
+      );
       setIsLoading(false);
       alert(
         "Error al enviar la reseña: " +
-          (err.message || "Inténtalo de nuevo más tarde")
+          (typeof err === "string"
+            ? err
+            : err.message || "Inténtalo de nuevo más tarde")
       );
     }
   };
@@ -347,11 +381,21 @@ const BookCard = ({
       {/* Mostrar mensaje de error si existe */}
       {error && <p className={styles.errorMessage}>{error}</p>}
 
-      {/* Debug: Mostrar información sobre las reseñas */}
-      {showReviews && process.env.NODE_ENV === "development" && (
-        <div className={styles.debug}>
+      {/* Debug: Mostrar información sobre las reseñas - visible siempre para ayudar con la depuración */}
+      {showReviews && (
+        <div
+          className={styles.debug}
+          style={{
+            background: "#f5f5f5",
+            padding: "10px",
+            borderRadius: "4px",
+            margin: "10px 0",
+            fontSize: "12px",
+          }}
+        >
           <p>Estado de las reseñas: {isLoading ? "Cargando..." : "Listo"}</p>
-          <p>Número de reseñas: {reviews.length}</p>
+          <p>Número de reseñas: {reviews ? reviews.length : 0}</p>
+          <p>ID del libro: {id}</p>
           <p>Error: {error || "Ninguno"}</p>
         </div>
       )}
@@ -371,46 +415,76 @@ const BookCard = ({
 
           {!isLoading && reviews.length > 0 && (
             <div className={styles.reviews}>
-              {reviews.map((review) => (
-                <div key={review._id} className={styles.review}>
-                  <div className={styles.reviewHeader}>
-                    <div className={styles.reviewUserInfo}>
-                      <User size={14} />
-                      <span className={styles.reviewUserName}>
-                        {review.username || "Usuario anónimo"}
+              {reviews.map((review) => {
+                // Verificar que la revisión tiene los campos necesarios
+                if (!review || typeof review !== "object") {
+                  console.error("Reseña inválida:", review);
+                  return null;
+                }
+
+                const reviewId = review._id || review.id;
+                if (!reviewId) {
+                  console.error("Reseña sin ID:", review);
+                }
+
+                return (
+                  <div key={reviewId} className={styles.review}>
+                    <div className={styles.reviewHeader}>
+                      <div className={styles.reviewUserInfo}>
+                        <User size={14} />
+                        <span className={styles.reviewUserName}>
+                          {review.username || "Usuario anónimo"}
+                        </span>
+                      </div>
+                      <span className={styles.reviewDate}>
+                        {review.createdAt
+                          ? new Date(review.createdAt).toLocaleDateString()
+                          : "Fecha desconocida"}
                       </span>
                     </div>
-                    <span className={styles.reviewDate}>
-                      {new Date(review.createdAt).toLocaleDateString()}
-                    </span>
-                  </div>
 
-                  <div className={styles.reviewRating}>
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        size={16}
-                        fill={i < review.rating ? "#ffc107" : "none"}
-                        color={i < review.rating ? "#ffc107" : "#d1d1d1"}
-                      />
-                    ))}
-                  </div>
+                    <div className={styles.reviewRating}>
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          size={16}
+                          fill={i < review.rating ? "#ffc107" : "none"}
+                          color={i < review.rating ? "#ffc107" : "#d1d1d1"}
+                        />
+                      ))}
+                    </div>
 
-                  <p className={styles.reviewComment}>{review.comment}</p>
+                    <p className={styles.reviewComment}>
+                      {review.comment || "Sin comentario"}
+                    </p>
 
-                  {/* Mostrar botón de eliminar solo si es admin o es el autor de la reseña */}
-                  {(isAdmin || (user && user.id === review.userId)) && (
-                    <button
-                      onClick={() => handleDeleteReview(review._id)}
-                      className={styles.deleteReviewButton}
-                      disabled={isLoading}
+                    {/* Depurar información de la revisión - comentar en producción */}
+                    <div
+                      style={{
+                        fontSize: "10px",
+                        color: "#666",
+                        marginTop: "5px",
+                      }}
                     >
-                      <Trash2 size={16} />
-                      Eliminar
-                    </button>
-                  )}
-                </div>
-              ))}
+                      ID de reseña: {reviewId || "Desconocido"}
+                      <br />
+                      ID de usuario: {review.userId || "Desconocido"}
+                    </div>
+
+                    {/* Mostrar botón de eliminar solo si es admin o es el autor de la reseña */}
+                    {(isAdmin || (user && user.id === review.userId)) && (
+                      <button
+                        onClick={() => handleDeleteReview(reviewId)}
+                        className={styles.deleteReviewButton}
+                        disabled={isLoading}
+                      >
+                        <Trash2 size={16} />
+                        Eliminar
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
