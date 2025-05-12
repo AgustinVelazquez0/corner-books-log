@@ -25,16 +25,19 @@ const BookDetail = () => {
         const foundBook = books.find((book) => book.id.toString() === id);
         if (foundBook) {
           setBook(foundBook);
-        }
 
-        // Cargar reseñas de la API
-        try {
-          const reviewData = await reviewService.getBookReviews(id);
-          console.log("Reseñas cargadas:", reviewData);
-          setReviews(reviewData.reviews || []);
-        } catch (reviewError) {
-          console.error("Error al cargar reseñas:", reviewError);
-          // No mostramos error si no hay reseñas, es normal para libros nuevos
+          // Ahora usamos el ID de MongoDB que debería estar guardado en el libro
+          const mongoId = foundBook.mongoId || id; // Usar mongoId si existe, sino el ID de la ruta
+
+          // Cargar reseñas de la API usando el ID de MongoDB
+          try {
+            const reviewData = await reviewService.getBookReviews(mongoId);
+            console.log("Reseñas cargadas:", reviewData);
+            setReviews(reviewData.reviews || []);
+          } catch (reviewError) {
+            console.error("Error al cargar reseñas:", reviewError);
+            // No mostramos error si no hay reseñas, es normal para libros nuevos
+          }
         }
 
         setLoadingReviews(false);
