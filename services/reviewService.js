@@ -1,91 +1,96 @@
 // services/reviewService.js
 import axios from "axios";
 
-// Asumiendo que tienes una variable de entorno para la URL base de la API
+// Uso correcto de las variables de entorno
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 const API_URL = `${BASE_URL}/api`; // Asegúrate de que siempre incluya '/api'
 
-// Obtiene el token de autenticación del localStorage
-const getToken = () => {
+// Obtener el token de autenticación del almacenamiento local
+const getAuthToken = () => {
   return localStorage.getItem("token");
 };
 
-// Configura los headers para las peticiones autenticadas
+// Configurar los headers de autenticación
 const getAuthHeaders = () => {
-  const token = getToken();
+  const token = getAuthToken();
   return {
     headers: {
-      "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : "",
+      Authorization: `Bearer ${token}`,
     },
   };
 };
 
-const reviewService = {
-  // Obtener todas las reseñas de un libro
-  getBookReviews: async (bookId) => {
-    try {
-      console.log(`Obteniendo reseñas para el libro con ID: ${bookId}`);
-      console.log(`URL de la petición: ${API_URL}/reviews/book/${bookId}`);
-      const response = await axios.get(`${API_URL}/reviews/book/${bookId}`);
-      console.log("Respuesta de reseñas:", response.data);
-      return response.data; // Asegúrate de que esto devuelva un array
-    } catch (error) {
-      console.error("Error al obtener reseñas:", error);
-      throw error.response?.data || error.message;
+// Crear una reseña
+export const createReview = async (reviewData) => {
+  try {
+    // Añadimos información del usuario desde localStorage
+    const userData = JSON.parse(localStorage.getItem("user")) || {};
+
+    const completeReviewData = {
+      ...reviewData,
+      userId: userData._id || "guest",
+      username: userData.username || "Usuario Anónimo",
+    };
+
+    console.log("Datos de la reseña a enviar:", completeReviewData);
+    console.log("URL de la petición:", `${API_URL}/reviews`);
+
+    // Enviamos los datos al backend con el token
+    const response = await axios.post(
+      `${API_URL}/reviews`,
+      completeReviewData,
+      getAuthHeaders()
+    );
+
+    console.log("Respuesta al crear reseña:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error al crear reseña:", error);
+
+    // Información detallada sobre el error
+    if (error.response) {
+      console.log("Detalles de la respuesta de error:", {
+        status: error.response.status,
+        data: error.response.data,
+      });
+      throw error.response.data;
     }
-  },
-
-  // Crear una nueva reseña
-  createReview: async (bookId, rating, comment) => {
-    try {
-      console.log(`Creando reseña para el libro con ID: ${bookId}`);
-      const reviewData = { bookId, rating, comment };
-      console.log("Datos de la reseña a enviar:", reviewData);
-      console.log(`URL de la petición: ${API_URL}/reviews`);
-
-      const response = await axios.post(
-        `${API_URL}/reviews`,
-        reviewData,
-        getAuthHeaders()
-      );
-
-      console.log("Respuesta al crear reseña:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("Error al crear reseña:", error);
-      if (error.response) {
-        console.error("Detalles de la respuesta de error:", {
-          status: error.response.status,
-          data: error.response.data,
-        });
-      }
-      throw error.response?.data || error.message;
-    }
-  },
-
-  // Eliminar una reseña
-  deleteReview: async (reviewId) => {
-    try {
-      console.log(`Eliminando reseña con ID: ${reviewId}`);
-      console.log(`URL de la petición: ${API_URL}/reviews/${reviewId}`);
-      const response = await axios.delete(
-        `${API_URL}/reviews/${reviewId}`,
-        getAuthHeaders()
-      );
-      console.log("Respuesta al eliminar reseña:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("Error al eliminar reseña:", error);
-      if (error.response) {
-        console.error("Detalles de la respuesta de error:", {
-          status: error.response.status,
-          data: error.response.data,
-        });
-      }
-      throw error.response?.data || error.message;
-    }
-  },
+    throw error;
+  }
 };
 
-export default reviewService;
+// Obtener reseñas de un libro
+export const getBookReviews = async (bookId) => {
+  try {
+    const response = await axios.get(`${API_URL}/reviews/book/${bookId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener reseñas del libro:", error);
+    throw error.response?.data || error;
+  }
+};
+
+// Obtener todas las reseñas
+export const getAllReviews = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/reviews`, getAuthHeaders());
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener todas las reseñas:", error);
+    throw error.response?.data || error;
+  }
+};
+
+// Eliminar una reseña (si implementas esta función)
+export const deleteReview = async (reviewId) => {
+  try {
+    const response = await axios.delete(
+      `${API_URL}/reviews/${reviewId}`,
+      getAuthHeaders()
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error al eliminar la reseña:", error);
+    throw error.response?.data || error;
+  }
+};

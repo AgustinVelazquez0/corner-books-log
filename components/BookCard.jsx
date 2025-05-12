@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import {
   Heart,
@@ -24,6 +24,8 @@ const BookCard = ({
   category,
   coverImage = "/api/placeholder/180/270",
   rating = 0,
+  numericId, // Añadido para manejar el caso de IDs numéricos
+  _id, // Añadido para manejar el caso de ObjectId directamente
 }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -35,19 +37,25 @@ const BookCard = ({
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState("");
+
+  // Determinar el ID correcto a usar (numericId, _id o id pasado directamente)
+  const effectiveId = numericId || _id || id;
 
   // Obtenemos la información del usuario autenticado
   const { user, isAuthenticated } = useAuth();
   const isAdmin = user?.role === "admin"; // Ajustado para comprobar el rol real del usuario
-
-  // Cargamos las reseñas para este libro
-  const fetchReviews = async () => {
+  // Definimos fetchReviews con useCallback para evitar problemas de dependencias
+  const fetchReviews = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
-      console.log("Intentando cargar reseñas para el libro con ID:", id);
+      console.log(
+        "Intentando cargar reseñas para el libro con ID:",
+        effectiveId
+      );
 
-      const data = await reviewService.getBookReviews(id);
+      const data = await reviewService.getBookReviews(effectiveId);
 
       console.log("Reseñas cargadas:", data);
 
@@ -79,14 +87,14 @@ const BookCard = ({
       setReviews([]); // Aseguramos un estado válido incluso en caso de error
       setIsLoading(false);
     }
-  };
+  }, [effectiveId]);
 
   // Cargar reseñas al montar el componente y cuando showReviews cambia
   useEffect(() => {
     if (showReviews) {
       fetchReviews();
     }
-  }, [id, showReviews]);
+  }, [effectiveId, showReviews, fetchReviews]); // Añadido fetchReviews como dependencia
 
   // Cargamos el estado de favorito para este libro
   useEffect(() => {
@@ -95,9 +103,9 @@ const BookCard = ({
       const userFavorites =
         JSON.parse(localStorage.getItem(`favorites_${user.id}`)) || [];
       // Verificar si este libro está en favoritos
-      setIsFavorite(userFavorites.includes(id));
+      setIsFavorite(userFavorites.includes(effectiveId)); // Cambiado de id a effectiveId
     }
-  }, [id, isAuthenticated, user]);
+  }, [effectiveId, isAuthenticated, user]); // Cambiado de id a effectiveId
 
   const isLongDescription = description.length > 150;
   const shortDescription = isLongDescription
@@ -121,14 +129,17 @@ const BookCard = ({
     let updatedFavorites;
     if (newIsFavorite) {
       // Añadir a favoritos si no existe ya
-      if (!userFavorites.includes(id)) {
-        updatedFavorites = [...userFavorites, id];
+      if (!userFavorites.includes(effectiveId)) {
+        // Cambiado de id a effectiveId
+        updatedFavorites = [...userFavorites, effectiveId]; // Cambiado de id a effectiveId
       } else {
         updatedFavorites = userFavorites;
       }
     } else {
       // Eliminar de favoritos
-      updatedFavorites = userFavorites.filter((bookId) => bookId !== id);
+      updatedFavorites = userFavorites.filter(
+        (bookId) => bookId !== effectiveId
+      ); // Cambiado de id a effectiveId
     }
 
     localStorage.setItem(favoritesKey, JSON.stringify(updatedFavorites));
@@ -149,6 +160,9 @@ const BookCard = ({
       return;
     }
     setShowReviewForm(!showReviewForm);
+    // Limpiar mensajes previos
+    setSuccessMessage("");
+    setError(null);
   };
 
   const handleSendReview = async () => {
@@ -167,12 +181,14 @@ const BookCard = ({
     try {
       setIsLoading(true);
       setError(null);
+      setSuccessMessage("");
 
-      console.log("ID del libro para la reseña:", id);
+      console.log("ID del libro para la reseña:", effectiveId);
+      console.log("Título del libro:", title);
 
-      // Enviamos la reseña a la API
+      // Enviamos la reseña a la API usando el método actualizado
       const response = await reviewService.createReview(
-        id,
+        effectiveId, // Cambiado de id a effectiveId
         userRating,
         comment
       );
@@ -187,25 +203,28 @@ const BookCard = ({
       setUserRating(0);
       setShowReviewForm(false);
 
+      // Mostrar mensaje de éxito
+      setSuccessMessage("¡Gracias por tu reseña!");
+
       // Asegurarse de que las reseñas se muestran
       setShowReviews(true);
 
-      alert("¡Gracias por tu reseña!");
       setIsLoading(false);
     } catch (err) {
       console.error("Error al enviar la reseña:", err);
-      setError(
-        typeof err === "string"
-          ? err
-          : err.message || "No se pudo enviar la reseña"
-      );
-      setIsLoading(false);
-      alert(
-        "Error al enviar la reseña: " +
-          (typeof err === "string"
+
+      // Mostrar mensaje apropiado según el error
+      if (err?.message === "Ya has escrito una reseña para este libro") {
+        setError("Ya has escrito una reseña para este libro.");
+      } else {
+        setError(
+          typeof err === "string"
             ? err
-            : err.message || "Inténtalo de nuevo más tarde")
-      );
+            : err.message || "No se pudo enviar la reseña"
+        );
+      }
+
+      setIsLoading(false);
     }
   };
 
@@ -313,6 +332,11 @@ const BookCard = ({
         )}
       </div>
 
+      {/* Mensajes de éxito */}
+      {successMessage && (
+        <div className={styles.successMessage}>{successMessage}</div>
+      )}
+
       {/* Botones para reseñas */}
       <div className={styles.reviewToggleArea}>
         <button
@@ -381,7 +405,7 @@ const BookCard = ({
       {/* Mostrar mensaje de error si existe */}
       {error && <p className={styles.errorMessage}>{error}</p>}
 
-      {/* Debug: Mostrar información sobre las reseñas - visible siempre para ayudar con la depuración */}
+      {/* Debug: Información sobre los IDs y las reseñas - visible siempre para ayudar con la depuración */}
       {showReviews && (
         <div
           className={styles.debug}
@@ -395,7 +419,10 @@ const BookCard = ({
         >
           <p>Estado de las reseñas: {isLoading ? "Cargando..." : "Listo"}</p>
           <p>Número de reseñas: {reviews ? reviews.length : 0}</p>
-          <p>ID del libro: {id}</p>
+          <p>ID usado: {effectiveId}</p>
+          <p>ID original: {id}</p>
+          <p>numericId: {numericId || "No proporcionado"}</p>
+          <p>_id: {_id || "No proporcionado"}</p>
           <p>Error: {error || "Ninguno"}</p>
         </div>
       )}
@@ -458,7 +485,7 @@ const BookCard = ({
                       {review.comment || "Sin comentario"}
                     </p>
 
-                    {/* Depurar información de la revisión - comentar en producción */}
+                    {/* Información de la revisión - mantiene la depuración para desarrollo */}
                     <div
                       style={{
                         fontSize: "10px",
@@ -504,7 +531,7 @@ const BookCard = ({
           </a>
         )}
 
-        <Link to={`/book/${id}`} className={styles.detailLink}>
+        <Link to={`/book/${effectiveId}`} className={styles.detailLink}>
           <button className={styles.detailButton}>Ver detalles</button>
         </Link>
       </div>
