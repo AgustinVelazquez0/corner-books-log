@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import styles from "../styles/BookCard.module.css";
 import { useAuth } from "../context/AuthContext";
-import reviewService from "../services/reviewService"; // Importamos el servicio de reseñas
+import reviewService from "../services/reviewService";
 
 const BookCard = ({
   id,
@@ -38,23 +38,26 @@ const BookCard = ({
 
   // Obtenemos la información del usuario autenticado
   const { user, isAuthenticated } = useAuth();
-  const isAdmin = true; // Esta lógica deberías ajustarla según tu aplicación
+  const isAdmin = user?.role === "admin"; // Ajustado para comprobar el rol real del usuario
 
-  // Cargamos las reseñas para este libro desde la API
+  // Cargamos las reseñas para este libro
+  const fetchReviews = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await reviewService.getBookReviews(id);
+      console.log("Reseñas cargadas:", data);
+      setReviews(data);
+      setIsLoading(false);
+    } catch (err) {
+      console.error("Error al cargar reseñas:", err);
+      setError("No se pudieron cargar las reseñas");
+      setIsLoading(false);
+    }
+  };
+
+  // Cargar reseñas al montar el componente y cuando showReviews cambia
   useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        setIsLoading(true);
-        const data = await reviewService.getBookReviews(id);
-        setReviews(data);
-        setIsLoading(false);
-      } catch (err) {
-        console.error("Error al cargar reseñas:", err);
-        setError("No se pudieron cargar las reseñas");
-        setIsLoading(false);
-      }
-    };
-
     if (showReviews) {
       fetchReviews();
     }
@@ -138,23 +141,27 @@ const BookCard = ({
 
     try {
       setIsLoading(true);
+      setError(null);
+
       // Enviamos la reseña a la API
       const response = await reviewService.createReview(
         id,
         userRating,
         comment
       );
-      console.log("ID del libro enviado:", id);
-      console.log("Reseña enviada:", response);
-      // Actualizamos la lista de reseñas en el estado
-      const newReview = response.review;
-      setReviews([...reviews, newReview]);
+
+      console.log("Respuesta del servidor:", response);
+
+      // Recargamos todas las reseñas para asegurarnos de tener los datos actualizados
+      await fetchReviews();
 
       // Limpiamos el formulario
       setComment("");
       setUserRating(0);
       setShowReviewForm(false);
-      setIsLoading(false);
+
+      // Asegurarse de que las reseñas se muestran
+      setShowReviews(true);
 
       alert("¡Gracias por tu reseña!");
     } catch (err) {
@@ -177,16 +184,14 @@ const BookCard = ({
     if (confirm("¿Estás seguro de que quieres eliminar esta reseña?")) {
       try {
         setIsLoading(true);
+        setError(null);
+
         // Llamamos a la API para eliminar la reseña
         await reviewService.deleteReview(reviewId);
 
-        // Actualizamos la lista de reseñas en el estado
-        const updatedReviews = reviews.filter(
-          (review) => review._id !== reviewId
-        );
-        setReviews(updatedReviews);
+        // Recargamos todas las reseñas para asegurarnos de tener los datos actualizados
+        await fetchReviews();
 
-        setIsLoading(false);
         alert("Reseña eliminada correctamente");
       } catch (err) {
         console.error("Error al eliminar la reseña:", err);
@@ -341,6 +346,15 @@ const BookCard = ({
 
       {/* Mostrar mensaje de error si existe */}
       {error && <p className={styles.errorMessage}>{error}</p>}
+
+      {/* Debug: Mostrar información sobre las reseñas */}
+      {showReviews && process.env.NODE_ENV === "development" && (
+        <div className={styles.debug}>
+          <p>Estado de las reseñas: {isLoading ? "Cargando..." : "Listo"}</p>
+          <p>Número de reseñas: {reviews.length}</p>
+          <p>Error: {error || "Ninguno"}</p>
+        </div>
+      )}
 
       {/* Reseñas cargadas desde la API */}
       {showReviews && (
