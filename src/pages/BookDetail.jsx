@@ -21,21 +21,48 @@ const BookDetail = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Cargar libro desde la API
+        // Obtener el token del almacenamiento local
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          console.error("No hay token de autenticación");
+          setLoading(false);
+          return;
+        }
+
+        // Cargar libro desde la API con autenticación
         const response = await fetch(
-          `https://library-back-end-9vgl.onrender.com/api/books/${id}`
+          `https://library-back-end-9vgl.onrender.com/api/books/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
+
         if (!response.ok) {
           throw new Error("No se pudo cargar el libro");
         }
+
         const bookData = await response.json();
         setBook(bookData.data);
 
-        // Cargar reseñas
+        // Cargar reseñas con el mismo token
         try {
-          const reviewData = await reviewService.getBookReviews(id);
-          console.log("Reseñas cargadas:", reviewData);
-          setReviews(reviewData.data || []);
+          const reviewResponse = await fetch(
+            `https://library-back-end-9vgl.onrender.com/api/reviews/book/${id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          if (reviewResponse.ok) {
+            const reviewData = await reviewResponse.json();
+            console.log("Reseñas cargadas:", reviewData);
+            setReviews(reviewData.data || []);
+          }
         } catch (reviewError) {
           console.error("Error al cargar reseñas:", reviewError);
         }
