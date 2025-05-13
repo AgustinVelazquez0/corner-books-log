@@ -22,7 +22,7 @@ const BookDetail = () => {
       try {
         console.log("Intentando cargar libro con ID:", id);
         setLoading(true);
-        
+
         // Cargar libro desde la API (sin requerir token para esta operación)
         const response = await fetch(
           `https://library-back-end-9vgl.onrender.com/api/books/${id}`
@@ -36,7 +36,7 @@ const BookDetail = () => {
 
         const bookData = await response.json();
         console.log("Datos del libro recibidos:", bookData);
-        
+
         // CORRECCIÓN: Accediendo correctamente a la estructura de la respuesta
         if (bookData && bookData.book) {
           setBook(bookData.book);
@@ -49,7 +49,9 @@ const BookDetail = () => {
         await loadReviews(id);
       } catch (error) {
         console.error("Error al cargar datos:", error);
-        setError("No se pudo cargar la información del libro: " + error.message);
+        setError(
+          "No se pudo cargar la información del libro: " + error.message
+        );
       } finally {
         setLoading(false);
       }
@@ -62,11 +64,11 @@ const BookDetail = () => {
   const loadReviews = async (bookId) => {
     try {
       setLoadingReviews(true);
-      
+
       // Intentar obtener token si existe (para contenido protegido)
       const token = localStorage.getItem("token");
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      
+
       const reviewResponse = await fetch(
         `https://library-back-end-9vgl.onrender.com/api/reviews/book/${bookId}`,
         { headers }
@@ -79,7 +81,7 @@ const BookDetail = () => {
 
       const reviewData = await reviewResponse.json();
       console.log("Reseñas cargadas:", reviewData);
-      
+
       // Establecer las reseñas según la estructura correcta de respuesta
       if (reviewData && Array.isArray(reviewData.data)) {
         setReviews(reviewData.data);
@@ -124,7 +126,7 @@ const BookDetail = () => {
       const reviewData = {
         bookId: id,
         rating: parseInt(rating),
-        comment: comment
+        comment: comment,
       };
 
       const response = await reviewService.createReview(reviewData);
@@ -172,7 +174,16 @@ const BookDetail = () => {
   return (
     <div className={styles.detailContainer}>
       {/* Mensaje de depuración (puedes eliminar en producción) */}
-      <div className={styles.debug} style={{fontSize: "12px", color: "#666", margin: "10px 0", padding: "5px", background: "#f5f5f5"}}>
+      <div
+        className={styles.debug}
+        style={{
+          fontSize: "12px",
+          color: "#666",
+          margin: "10px 0",
+          padding: "5px",
+          background: "#f5f5f5",
+        }}
+      >
         <p>ID del libro: {id}</p>
         <p>Título del libro: {book.title}</p>
         <p>_id del libro: {book._id}</p>
@@ -184,19 +195,26 @@ const BookDetail = () => {
           alt={`Portada de ${book.title}`}
         />
       </div>
-      
+
       <div className={styles.info}>
         <h2 className={styles.title}>{book.title}</h2>
         <p className={styles.author}>por {book.author}</p>
         <p className={styles.category}>Género: {book.category}</p>
         <div className={styles.rating}>{bookStars}</div>
-        
+
         <div className={styles.extraInfo}>
-          <p><strong>Año de publicación:</strong> {book.publicationYear || "No disponible"}</p>
-          <p><strong>Idioma:</strong> {book.language || "No especificado"}</p>
-          <p><strong>Páginas:</strong> {book.pages || "No especificado"}</p>
+          <p>
+            <strong>Año de publicación:</strong>{" "}
+            {book.publicationYear || "No disponible"}
+          </p>
+          <p>
+            <strong>Idioma:</strong> {book.language || "No especificado"}
+          </p>
+          <p>
+            <strong>Páginas:</strong> {book.pages || "No especificado"}
+          </p>
         </div>
-        
+
         <p className={styles.description}>{book.description}</p>
 
         {book.driveLink && (
