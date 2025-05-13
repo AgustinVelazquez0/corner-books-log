@@ -26,17 +26,29 @@ function App() {
             <div className="app-container">
               <Header />
               <main className="content">
-                <AuthRouteGuard>
-                  <Routes>
-                    <Route path="/" element={<Inicio />} />
-                    <Route path="/catalogo" element={<Catalogo />} />
-                    <Route path="/book/:id" element={<BookDetail />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/account" element={<Account />} />
-                    <Route path="/search" element={<SearchResults />} />
-                  </Routes>
-                </AuthRouteGuard>
+                {/* 
+                  CAMBIO IMPORTANTE:
+                  Se eliminó el AuthRouteGuard que envolvía todas las rutas
+                  ya que esto puede estar bloqueando acceso a BookDetail para usuarios no autenticados
+                */}
+                <Routes>
+                  <Route path="/" element={<Inicio />} />
+                  <Route path="/catalogo" element={<Catalogo />} />
+                  <Route path="/book/:id" element={<BookDetail />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/login" element={<Login />} />
+
+                  {/* Estas rutas sí necesitan autenticación */}
+                  <Route
+                    path="/account"
+                    element={
+                      <AuthRouteGuard>
+                        <Account />
+                      </AuthRouteGuard>
+                    }
+                  />
+                  <Route path="/search" element={<SearchResults />} />
+                </Routes>
               </main>
               <Footer />
             </div>

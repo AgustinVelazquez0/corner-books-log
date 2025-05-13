@@ -2,7 +2,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import styles from "../../styles/BookDetail.module.css";
 import { Star } from "lucide-react";
-// import books from "../data/books.json";
 import * as reviewService from "../../services/reviewService";
 
 const BookDetail = () => {
@@ -17,62 +16,42 @@ const BookDetail = () => {
   const [reviews, setReviews] = useState([]);
   const [loadingReviews, setLoadingReviews] = useState(true);
 
-  // Cargar el libro desde JSON y las reseñas desde la API
+  // Cargar el libro desde la API
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Obtener el token del almacenamiento local
-        const token = localStorage.getItem("token");
+        console.log("Intentando cargar libro con ID:", id);
+        setLoading(true);
 
-        if (!token) {
-          console.error("No hay token de autenticación");
-          setLoading(false);
-          return;
-        }
-
-        // Cargar libro desde la API con autenticación
+        // Cargar libro desde la API (sin requerir token para esta operación)
         const response = await fetch(
-          `https://library-back-end-9vgl.onrender.com/api/books/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+          `https://library-back-end-9vgl.onrender.com/api/books/${id}`
         );
 
-        const bookData = await response.json();
         if (!response.ok) {
-          console.error("Error al cargar libro:", bookData);
+          const errorData = await response.json();
+          console.error("Error al cargar libro:", errorData);
           throw new Error("No se pudo cargar el libro");
         }
 
-        console.log("Token:", token);
-        console.log("Datos del libro:", bookData);
-        setBook(bookData.data);
+        const bookData = await response.json();
+        console.log("Datos del libro recibidos:", bookData);
 
-        // Cargar reseñas con el mismo token
-        try {
-          const reviewResponse = await fetch(
-            `https://library-back-end-9vgl.onrender.com/api/reviews/book/${id}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-
-          if (reviewResponse.ok) {
-            const reviewData = await reviewResponse.json();
-            console.log("Reseñas cargadas:", reviewData);
-            setReviews(reviewData.data || []);
-          }
-        } catch (reviewError) {
-          console.error("Error al cargar reseñas:", reviewError);
+        // CORRECCIÓN: Accediendo correctamente a la estructura de la respuesta
+        if (bookData && bookData.book) {
+          setBook(bookData.book);
+        } else {
+          console.error("Estructura de respuesta inesperada:", bookData);
+          throw new Error("Formato de respuesta incorrecto");
         }
 
-        setLoadingReviews(false);
+        // Intentamos cargar las reseñas del libro
+        await loadReviews(id);
       } catch (error) {
         console.error("Error al cargar datos:", error);
+        setError(
+          "No se pudo cargar la información del libro: " + error.message
+        );
       } finally {
         setLoading(false);
       }
@@ -80,6 +59,44 @@ const BookDetail = () => {
 
     loadData();
   }, [id]);
+
+  // Función separada para cargar reseñas
+  const loadReviews = async (bookId) => {
+    try {
+      setLoadingReviews(true);
+
+      // Intentar obtener token si existe (para contenido protegido)
+      const token = localStorage.getItem("token");
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+      const reviewResponse = await fetch(
+        `https://library-back-end-9vgl.onrender.com/api/reviews/book/${bookId}`,
+        { headers }
+      );
+
+      if (!reviewResponse.ok) {
+        console.warn("No se pudieron cargar las reseñas. Continuando...");
+        return;
+      }
+
+      const reviewData = await reviewResponse.json();
+      console.log("Reseñas cargadas:", reviewData);
+
+      // Establecer las reseñas según la estructura correcta de respuesta
+      if (reviewData && Array.isArray(reviewData.data)) {
+        setReviews(reviewData.data);
+      } else if (reviewData && Array.isArray(reviewData.reviews)) {
+        setReviews(reviewData.reviews);
+      } else {
+        console.warn("Formato de reseñas inesperado:", reviewData);
+        setReviews([]);
+      }
+    } catch (reviewError) {
+      console.error("Error al cargar reseñas:", reviewError);
+    } finally {
+      setLoadingReviews(false);
+    }
+  };
 
   // Enviar una nueva reseña
   const handleSubmit = async (e) => {
@@ -98,16 +115,29 @@ const BookDetail = () => {
     }
 
     try {
+      // Comprobamos que tenemos un token
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("Necesitas iniciar sesión para enviar una reseña");
+        return;
+      }
+
       // Usar el servicio de reseñas para crear una nueva reseña
-      await reviewService.createReview(id, parseInt(rating), comment);
+      const reviewData = {
+        bookId: id,
+        rating: parseInt(rating),
+        comment: comment,
+      };
+
+      const response = await reviewService.createReview(reviewData);
+      console.log("Respuesta al crear reseña:", response);
 
       setSuccess("¡Reseña enviada con éxito!");
       setRating(0);
       setComment("");
 
       // Recargar las reseñas para ver la nueva
-      const updatedReviews = await reviewService.getBookReviews(id);
-      setReviews(updatedReviews.reviews || []);
+      await loadReviews(id);
     } catch (err) {
       console.error("Error al enviar la reseña:", err);
       setError(
@@ -116,7 +146,7 @@ const BookDetail = () => {
     }
   };
 
-  if (loading) return <p className={styles.loading}>Cargando...</p>;
+  if (loading) return <p className={styles.loading}>Cargando libro...</p>;
   if (!book) return <p className={styles.error}>Libro no encontrado.</p>;
 
   // Renderizar estrellas para la calificación del libro
@@ -143,17 +173,48 @@ const BookDetail = () => {
 
   return (
     <div className={styles.detailContainer}>
+      {/* Mensaje de depuración (puedes eliminar en producción) */}
+      <div
+        className={styles.debug}
+        style={{
+          fontSize: "12px",
+          color: "#666",
+          margin: "10px 0",
+          padding: "5px",
+          background: "#f5f5f5",
+        }}
+      >
+        <p>ID del libro: {id}</p>
+        <p>Título del libro: {book.title}</p>
+        <p>_id del libro: {book._id}</p>
+      </div>
+
       <div className={styles.cover}>
         <img
           src={book.coverImage || "/api/placeholder/180/270"}
           alt={`Portada de ${book.title}`}
         />
       </div>
+
       <div className={styles.info}>
         <h2 className={styles.title}>{book.title}</h2>
         <p className={styles.author}>por {book.author}</p>
         <p className={styles.category}>Género: {book.category}</p>
         <div className={styles.rating}>{bookStars}</div>
+
+        <div className={styles.extraInfo}>
+          <p>
+            <strong>Año de publicación:</strong>{" "}
+            {book.publicationYear || "No disponible"}
+          </p>
+          <p>
+            <strong>Idioma:</strong> {book.language || "No especificado"}
+          </p>
+          <p>
+            <strong>Páginas:</strong> {book.pages || "No especificado"}
+          </p>
+        </div>
+
         <p className={styles.description}>{book.description}</p>
 
         {book.driveLink && (
