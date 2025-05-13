@@ -173,22 +173,6 @@ const BookDetail = () => {
 
   return (
     <div className={styles.detailContainer}>
-      {/* Mensaje de depuración (puedes eliminar en producción) */}
-      <div
-        className={styles.debug}
-        style={{
-          fontSize: "12px",
-          color: "#666",
-          margin: "10px 0",
-          padding: "5px",
-          background: "#f5f5f5",
-        }}
-      >
-        <p>ID del libro: {id}</p>
-        <p>Título del libro: {book.title}</p>
-        <p>_id del libro: {book._id}</p>
-      </div>
-
       <div className={styles.cover}>
         <img
           src={book.coverImage || "/api/placeholder/180/270"}
