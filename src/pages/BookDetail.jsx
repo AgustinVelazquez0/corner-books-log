@@ -40,11 +40,14 @@ const BookDetail = () => {
           }
         );
 
+        const bookData = await response.json();
         if (!response.ok) {
+          console.error("Error al cargar libro:", bookData);
           throw new Error("No se pudo cargar el libro");
         }
 
-        const bookData = await response.json();
+        console.log("Token:", token);
+        console.log("Datos del libro:", bookData);
         setBook(bookData.data);
 
         // Cargar reseñas con el mismo token
