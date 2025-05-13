@@ -398,28 +398,6 @@ const BookCard = ({
       {/* Mostrar mensaje de error si existe */}
       {error && <p className={styles.errorMessage}>{error}</p>}
 
-      {/* Debug: Información sobre los IDs y las reseñas - visible siempre para ayudar con la depuración */}
-      {showReviews && (
-        <div
-          className={styles.debug}
-          style={{
-            background: "#f5f5f5",
-            padding: "10px",
-            borderRadius: "4px",
-            margin: "10px 0",
-            fontSize: "12px",
-          }}
-        >
-          <p>Estado de las reseñas: {isLoading ? "Cargando..." : "Listo"}</p>
-          <p>Número de reseñas: {reviews ? reviews.length : 0}</p>
-          <p>ID usado: {effectiveId}</p>
-          <p>ID original: {id}</p>
-          <p>numericId: {numericId || "No proporcionado"}</p>
-          <p>_id: {_id || "No proporcionado"}</p>
-          <p>Error: {error || "Ninguno"}</p>
-        </div>
-      )}
-
       {/* Reseñas cargadas desde la API */}
       {showReviews && (
         <div className={styles.reviewContainer}>
