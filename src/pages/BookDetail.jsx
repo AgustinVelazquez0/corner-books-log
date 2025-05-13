@@ -15,7 +15,7 @@ const BookDetail = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [reviews, setReviews] = useState([]);
-  const [loadingReviews] = useState(true);
+  const [loadingReviews, setLoadingReviews] = useState(true);
 
   // Cargar el libro desde JSON y las reseñas desde la API
   useEffect(() => {
@@ -40,20 +40,15 @@ const BookDetail = () => {
           }
         );
 
-        // Verificar si la respuesta fue exitosa
+        const bookData = await response.json();
         if (!response.ok) {
+          console.error("Error al cargar libro:", bookData);
           throw new Error("No se pudo cargar el libro");
         }
 
-        const bookData = await response.json();
-
-        // Verificar si los datos del libro son válidos
-        if (!bookData || !bookData.data) {
-          throw new Error("El libro no fue encontrado");
-        }
-
-        setBook(bookData.data); // Establecer los detalles del libro
-        setLoading(false); // Terminar la carga
+        console.log("Token:", token);
+        console.log("Datos del libro:", bookData);
+        setBook(bookData.data);
 
         // Cargar reseñas con el mismo token
         try {
@@ -74,19 +69,17 @@ const BookDetail = () => {
         } catch (reviewError) {
           console.error("Error al cargar reseñas:", reviewError);
         }
+
+        setLoadingReviews(false);
       } catch (error) {
         console.error("Error al cargar datos:", error);
-        setError(error.message); // Establecer mensaje de error
-        setLoading(false); // Terminar la carga en caso de error
+      } finally {
+        setLoading(false);
       }
     };
 
     loadData();
   }, [id]);
-
-  if (loading) return <p className={styles.loading}>Cargando...</p>;
-  if (error) return <p className={styles.error}>{error}</p>; // Mostrar el error si no se carga el libro
-  if (!book) return <p className={styles.error}>Libro no encontrado.</p>;
 
   // Enviar una nueva reseña
   const handleSubmit = async (e) => {
@@ -122,6 +115,9 @@ const BookDetail = () => {
       );
     }
   };
+
+  if (loading) return <p className={styles.loading}>Cargando...</p>;
+  if (!book) return <p className={styles.error}>Libro no encontrado.</p>;
 
   // Renderizar estrellas para la calificación del libro
   const bookStars = [...Array(5)].map((_, i) => (
