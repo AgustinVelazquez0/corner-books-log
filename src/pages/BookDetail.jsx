@@ -1,8 +1,9 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import styles from "../../styles/BookDetail.module.css";
-import { Star } from "lucide-react";
+import { Star, User, MessageCircle, Send, Trash2 } from "lucide-react";
 import * as reviewService from "../../services/reviewService";
+import { useAuth } from "../../context/AuthContext"; // Asegúrate de importar el contexto de autenticación
 
 const BookDetail = () => {
   const { id } = useParams();
@@ -10,11 +11,17 @@ const BookDetail = () => {
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
   const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0); // Añadido para efecto hover en estrellas
   const [comment, setComment] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [reviews, setReviews] = useState([]);
   const [loadingReviews, setLoadingReviews] = useState(true);
+  const [showReviewForm, setShowReviewForm] = useState(false); // Controla visibilidad del formulario
+
+  // Obtenemos la información del usuario autenticado
+  const { user, isAuthenticated } = useAuth();
+  const isAdmin = user?.role === "admin";
 
   // Cargar el libro desde la API
   useEffect(() => {
@@ -98,6 +105,51 @@ const BookDetail = () => {
     }
   };
 
+  // Alternar mostrar/ocultar formulario de reseña
+  const toggleReviewForm = () => {
+    // Si el usuario no está autenticado, mostrar alerta
+    if (!isAuthenticated) {
+      alert("Debes iniciar sesión para escribir una reseña");
+      return;
+    }
+    setShowReviewForm(!showReviewForm);
+    // Limpiar mensajes previos
+    setSuccess("");
+    setError("");
+  };
+
+  // Eliminar una reseña
+  const handleDeleteReview = async (reviewId) => {
+    if (!isAuthenticated || !user) {
+      alert("Necesitas iniciar sesión para realizar esta acción");
+      return;
+    }
+
+    if (confirm("¿Estás seguro de que quieres eliminar esta reseña?")) {
+      try {
+        setLoadingReviews(true);
+        setError("");
+
+        // Llamamos a la API para eliminar la reseña
+        await reviewService.deleteReview(reviewId);
+
+        // Recargamos todas las reseñas para asegurarnos de tener los datos actualizados
+        await loadReviews(id);
+
+        alert("Reseña eliminada correctamente");
+      } catch (err) {
+        console.error("Error al eliminar la reseña:", err);
+        setError(err.message || "No se pudo eliminar la reseña");
+        alert(
+          "Error al eliminar la reseña: " +
+            (err.message || "Inténtalo de nuevo más tarde")
+        );
+      } finally {
+        setLoadingReviews(false);
+      }
+    }
+  };
+
   // Enviar una nueva reseña
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -135,6 +187,7 @@ const BookDetail = () => {
       setSuccess("¡Reseña enviada con éxito!");
       setRating(0);
       setComment("");
+      setShowReviewForm(false); // Ocultar formulario después de enviar
 
       // Recargar las reseñas para ver la nueva
       await loadReviews(id);
@@ -164,9 +217,11 @@ const BookDetail = () => {
     <Star
       key={i}
       size={24}
-      fill={i < rating ? "#ffc107" : "none"}
-      color={i < rating ? "#ffc107" : "#ccc"}
       onClick={() => setRating(i + 1)}
+      onMouseEnter={() => setHoverRating(i + 1)}
+      onMouseLeave={() => setHoverRating(0)}
+      fill={i < (hoverRating || rating) ? "#ffc107" : "none"}
+      color={i < (hoverRating || rating) ? "#ffc107" : "#ccc"}
       style={{ cursor: "pointer" }}
     />
   ));
@@ -212,69 +267,127 @@ const BookDetail = () => {
           </a>
         )}
 
-        {/* Reseñas existentes */}
-        <div className={styles.reviewsContainer}>
-          <h3>Reseñas</h3>
-          {loadingReviews ? (
-            <p>Cargando reseñas...</p>
-          ) : reviews.length > 0 ? (
-            <div className={styles.reviewsList}>
-              {reviews.map((review) => (
-                <div key={review._id} className={styles.reviewItem}>
-                  <div className={styles.reviewHeader}>
-                    <span className={styles.reviewAuthor}>
-                      {review.username || "Anónimo"}
-                    </span>
-                    <div className={styles.reviewRating}>
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          size={14}
-                          fill={i < review.rating ? "#ffc107" : "none"}
-                          color={i < review.rating ? "#ffc107" : "#ccc"}
-                        />
-                      ))}
-                    </div>
-                    <span className={styles.reviewDate}>
-                      {new Date(review.createdAt).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <p className={styles.reviewComment}>{review.comment}</p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p>No hay reseñas todavía. ¡Sé el primero en opinar!</p>
-          )}
+        {/* Botones para reseñas */}
+        <div className={styles.reviewToggleArea}>
+          <button
+            onClick={toggleReviewForm}
+            className={styles.reviewToggleButton}
+          >
+            {showReviewForm ? "Cancelar reseña" : "Escribir reseña"}
+          </button>
+
+          <button className={styles.reviewToggleButton}>
+            <MessageCircle size={16} style={{ marginRight: "5px" }} />
+            Ver reseñas {reviews.length > 0 ? `(${reviews.length})` : ""}
+          </button>
         </div>
 
-        {/* Formulario de reseña */}
+        {/* Sección de reseñas y formulario */}
         <div className={styles.reviewSection}>
-          <h3>Deja tu reseña</h3>
-          {success && <p className={styles.success}>{success}</p>}
-          {error && <p className={styles.error}>{error}</p>}
+          {/* Contenedor de reseñas existentes */}
+          <div className={styles.reviewsDetails}>
+            <h3>Reseñas</h3>
+            {loadingReviews ? (
+              <p>Cargando reseñas...</p>
+            ) : reviews.length > 0 ? (
+              <div className={styles.reviewsList}>
+                {reviews.map((review) => {
+                  const reviewId = review._id || review.id;
 
-          <form onSubmit={handleSubmit} className={styles.reviewForm}>
-            <div className={styles.ratingSelector}>
-              <label>Calificación:</label>
-              <div className={styles.stars}>{ratingStars}</div>
-            </div>
+                  return (
+                    <div key={reviewId} className={styles.reviewItem}>
+                      <div className={styles.reviewHeader}>
+                        <div className={styles.reviewUserInfo}>
+                          <User size={14} />
+                          <span className={styles.reviewAuthor}>
+                            {review.username || "Usuario anónimo"}
+                          </span>
+                        </div>
+                        <div className={styles.reviewRating}>
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              size={14}
+                              fill={i < review.rating ? "#ffc107" : "none"}
+                              color={i < review.rating ? "#ffc107" : "#ccc"}
+                            />
+                          ))}
+                        </div>
+                        <span className={styles.reviewDate}>
+                          {new Date(review.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <p className={styles.reviewComment}>{review.comment}</p>
 
-            <div className={styles.commentField}>
-              <label htmlFor="comment">Comentario:</label>
-              <textarea
-                id="comment"
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="Escribe tu opinión sobre este libro..."
-                rows={4}
-              />
-            </div>
+                      {/* Mostrar botón de eliminar solo si es admin o es el autor de la reseña */}
+                      {(isAdmin || (user && user.id === review.userId)) && (
+                        <button
+                          onClick={() => handleDeleteReview(reviewId)}
+                          className={styles.deleteReviewButton}
+                          disabled={loadingReviews}
+                        >
+                          <Trash2 size={16} />
+                          Eliminar
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className={styles.noReviews}>
+                No hay reseñas todavía. ¡Sé el primero en opinar!
+              </p>
+            )}
+          </div>
 
-            <button type="submit" className={styles.submitReview}>
-              Enviar Reseña
-            </button>
-          </form>
+          {/* Formulario para añadir reseñas - visible solo cuando showReviewForm es true */}
+          {showReviewForm ? (
+            <>
+              <h3>Deja tu reseña</h3>
+              {success && <p className={styles.success}>{success}</p>}
+              {error && <p className={styles.error}>{error}</p>}
+
+              <div className={styles.userReviewInfo}>
+                <User size={16} />
+                <span>Publicando como: {user?.name || "Usuario"}</span>
+              </div>
+
+              <form onSubmit={handleSubmit} className={styles.reviewForm}>
+                <div className={styles.ratingSelector}>
+                  <label>Calificación:</label>
+                  <div className={styles.stars}>{ratingStars}</div>
+                </div>
+
+                <div className={styles.commentField}>
+                  <label htmlFor="comment">Comentario:</label>
+                  <textarea
+                    id="comment"
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder="Escribe tu opinión sobre este libro..."
+                    rows={4}
+                    className={styles.commentInput}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className={styles.submitReview || styles.sendReviewButton}
+                  disabled={rating === 0 || comment.trim() === "" || loading}
+                >
+                  {loading ? (
+                    "Enviando..."
+                  ) : (
+                    <>
+                      <Send size={16} style={{ marginRight: "4px" }} />
+                      Enviar reseña
+                    </>
+                  )}
+                </button>
+              </form>
+            </>
+          ) : null}
         </div>
 
         <button className={styles.backButton} onClick={() => navigate(-1)}>

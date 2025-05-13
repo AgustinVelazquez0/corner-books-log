@@ -453,7 +453,7 @@ const BookCard = ({
                       <div className={styles.reviewUserInfo}>
                         <User size={14} />
                         <span className={styles.reviewUserName}>
-                          {review.username || "Usuario anónimo"}
+                          {review.name || "Usuario anónimo"}
                         </span>
                       </div>
                       <span className={styles.reviewDate}>
