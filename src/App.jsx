@@ -26,6 +26,11 @@ function App() {
             <div className="app-container">
               <Header />
               <main className="content">
+                {/* 
+                  CAMBIO IMPORTANTE:
+                  Se eliminó el AuthRouteGuard que envolvía todas las rutas
+                  ya que esto puede estar bloqueando acceso a BookDetail para usuarios no autenticados
+                */}
                 <Routes>
                   <Route path="/" element={<Inicio />} />
                   <Route path="/catalogo" element={<Catalogo />} />

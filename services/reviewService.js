@@ -1,4 +1,4 @@
-// services/reviewService.js
+// reviewService.js
 
 // URL base para las APIs de reseñas
 const API_URL = "https://library-back-end-9vgl.onrender.com/api";
