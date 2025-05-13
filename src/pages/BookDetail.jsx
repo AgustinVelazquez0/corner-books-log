@@ -101,10 +101,10 @@ const BookDetail = () => {
             Leer o Descargar
           </a>
         )}
+        <button className={styles.backButton} onClick={() => navigate(-1)}>
+          ← Volver
+        </button>
       </div>
-      <button className={styles.backButton} onClick={() => navigate(-1)}>
-        ← Volver
-      </button>
     </div>
   );
 };
