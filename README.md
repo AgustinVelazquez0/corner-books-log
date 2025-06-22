@@ -1,3 +1,17 @@
+<<<<<<< HEAD
+# Proyecto **Vite** con React
+
+---
+
+**PROYECTO HECHO CON EL DEPLOY EN LA RAMA BACK, EN LA RAMA MAIN SE ENCUENTRA UNICAMENTE LOCALHOST ACTUALMENTE**
+
+## LIBRARY REACT PROJECT
+
+### CORNER-BOOS
+
+Una aplicación simple que simula una **Library** desarrollada en React y configurada con **Vite**. Permite a los usuarios explorar distintos libros, dar reseñas, comentar, iniciar sesión entre otras funcionalidades. Usando Vite para un entorno de desarrollo más rápido.
+
+=======
 # Proyecto **Vite** con React para `BIOS`
 
 ---
@@ -8,6 +22,7 @@
 
 Una aplicación simple que simula una **Library** desarrollada en React y configurada con **Vite**. Permite a los usuarios explorar distintos libros, dar reseñas, comentar, iniciar sesión entre otras funcionalidades. Usando Vite para un entorno de desarrollo más rápido.
 
+>>>>>>> back
 ### Requisitos Previos
 
 Asegúrate de tener instalados los siguientes programas antes de comenzar:

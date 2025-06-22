@@ -1,11 +1,50 @@
+import { useState, useEffect } from "react";
 import { useBookCategory } from "../../context/useBookCategory";
 import { useBookAuthor } from "../../context/useBookAuthor";
-import books from "../data/books.json";
+import { getAllBooks } from "../../services/bookService";
+import localBooks from "../data/books.json"; // Fallback
 import styles from "../../styles/Catalogo.module.css";
 
 const Catalogo = () => {
   const { selectedCategory } = useBookCategory();
   const { selectedAuthor } = useBookAuthor();
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const loadBooks = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        console.log("🔄 Cargando libros desde la API para el catálogo...");
+
+        // Intentar cargar desde la API
+        const booksFromAPI = await getAllBooks();
+
+        console.log("✅ Libros cargados desde la API:", booksFromAPI.length);
+
+        // Normalizar estructura: asegurar que todos los libros tengan id
+        const normalizedBooks = booksFromAPI.map((book) => ({
+          ...book,
+          id: book.id || book.numericId || book._id,
+        }));
+
+        setBooks(normalizedBooks);
+      } catch (err) {
+        console.error("❌ Error al cargar libros desde la API:", err);
+        console.log("🔄 Usando datos locales como fallback...");
+
+        setError("Error al conectar con el servidor. Mostrando datos locales.");
+        setBooks(localBooks);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadBooks();
+  }, []);
 
   // Filtro de libros
   const filteredBooks = books.filter((book) => {
@@ -20,9 +59,28 @@ const Catalogo = () => {
     a.title.localeCompare(b.title)
   );
 
+  if (loading) {
+    return <div className={styles.loading}>🔄 Cargando catálogo...</div>;
+  }
+
   return (
     <div className={styles.catalogoContainer}>
       <h2>Catálogo de Libros</h2>
+
+      {error && (
+        <div
+          style={{
+            background: "#fff3cd",
+            color: "#856404",
+            padding: "10px",
+            borderRadius: "5px",
+            margin: "10px 0",
+            border: "1px solid #ffeaa7",
+          }}
+        >
+          ⚠️ {error}
+        </div>
+      )}
 
       {/* Mostrar filtros activos */}
       <div className={styles.activeFilters}>
@@ -34,7 +92,7 @@ const Catalogo = () => {
         {selectedAuthor && (
           <span className={styles.filterBadge}>Autor: {selectedAuthor}</span>
         )}
-        {filteredBooks.length === 0 && (
+        {filteredBooks.length === 0 && !loading && (
           <p>No se encontraron libros con los filtros aplicados.</p>
         )}
       </div>

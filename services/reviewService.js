@@ -1,195 +1,148 @@
-// reviewService.js
+const API_BASE_URL = "/api";
 
-// URL base para las APIs de reseñas
-const API_URL = "https://library-back-end-9vgl.onrender.com/api";
-
-/**
- * Obtiene las reseñas para un libro específico
- * @param {string} bookId - ID del libro
- * @returns {Promise<Object>} - Respuesta de la API con las reseñas
- */
+// Obtener reseñas de un libro específico
 export const getBookReviews = async (bookId) => {
   try {
-    // Obtener el token de autenticación (si existe)
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.warn("No hay token de autenticación para obtener reseñas");
-    }
-
-    const response = await fetch(`${API_URL}/reviews/book/${bookId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-    });
-
-    // Si la respuesta no es exitosa, lanzar un error
+    const response = await fetch(`${API_BASE_URL}/reviews/book/${bookId}`);
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Error al obtener reseñas");
+      throw new Error(`Error: ${response.status}`);
     }
-
     const data = await response.json();
-    console.log("Reseñas recibidas:", data);
-
-    // Normalizar la respuesta para manejar diferentes estructuras
     return {
-      success: true,
-      data: data.data || data.reviews || [],
+      success: data.success,
+      reviews: data.data || [],
+      count: data.count || 0,
     };
   } catch (error) {
-    console.error("Error en getBookReviews:", error);
-    return {
-      success: false,
-      error: error.message || "Error al obtener las reseñas",
-      data: [],
-    };
+    console.error("Error al obtener reseñas:", error);
+    throw error;
   }
 };
 
-/**
- * Crea una nueva reseña para un libro
- * @param {Object} reviewData - Datos de la reseña (bookId, rating, comment)
- * @returns {Promise<Object>} - Respuesta de la API
- */
-export const createReview = async (reviewData) => {
+// Crear una nueva reseña
+export const createReview = async (bookId, rating, comment) => {
   try {
-    // Validar estructura de datos
-    if (!reviewData.bookId) {
-      throw new Error("El ID del libro es requerido");
-    }
-
-    if (!reviewData.rating || reviewData.rating < 1 || reviewData.rating > 5) {
-      throw new Error("La calificación debe estar entre 1 y 5");
-    }
-
-    if (!reviewData.comment || reviewData.comment.trim() === "") {
-      throw new Error("El comentario es requerido");
-    }
-
-    // Verificar el token de autenticación
+    // Obtener token del localStorage - usando "token" como en AuthContext
     const token = localStorage.getItem("token");
+
     if (!token) {
-      throw new Error("Necesitas iniciar sesión para enviar una reseña");
+      throw new Error("No estás autenticado. Por favor, inicia sesión.");
     }
 
-    // Hacer la solicitud POST
-    const response = await fetch(`${API_URL}/reviews`, {
+    console.log("📝 Creando reseña:", {
+      bookId,
+      rating,
+      comment,
+      token: "Presente",
+    });
+
+    const response = await fetch(`${API_BASE_URL}/reviews`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(reviewData),
+      body: JSON.stringify({
+        bookId,
+        rating,
+        comment,
+        // Ya no necesitamos userId ni username
+      }),
     });
 
-    // Manejar errores específicos del servidor
+    console.log("📥 Respuesta recibida:", response.status, response.statusText);
+
     if (!response.ok) {
       const errorData = await response.json();
-
-      // Si ya existe una reseña del usuario para este libro
-      if (
-        errorData.message &&
-        errorData.message.includes("Ya has escrito una reseña")
-      ) {
-        throw new Error("Ya has escrito una reseña para este libro");
-      }
-
-      throw new Error(errorData.message || "Error al crear la reseña");
+      console.error("❌ Error del servidor:", errorData);
+      throw new Error(errorData.message || `Error: ${response.status}`);
     }
 
-    const data = await response.json();
-    return {
-      success: true,
-      data: data.data || data,
-    };
+    const result = await response.json();
+    console.log("✅ Reseña creada exitosamente:", result);
+    return result;
   } catch (error) {
-    console.error("Error en createReview:", error);
+    console.error("Error al crear reseña:", error);
     throw error;
   }
 };
 
-/**
- * Elimina una reseña
- * @param {string} reviewId - ID de la reseña a eliminar
- * @returns {Promise<Object>} - Respuesta de la API
- */
+// Eliminar una reseña
 export const deleteReview = async (reviewId) => {
   try {
-    // Verificar el token de autenticación
     const token = localStorage.getItem("token");
+
     if (!token) {
-      throw new Error("Necesitas iniciar sesión para eliminar una reseña");
+      throw new Error("No estás autenticado. Por favor, inicia sesión.");
     }
 
-    // Hacer la solicitud DELETE
-    const response = await fetch(`${API_URL}/reviews/${reviewId}`, {
+    const response = await fetch(`${API_BASE_URL}/reviews/${reviewId}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    // Manejar errores específicos del servidor
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || "Error al eliminar la reseña");
+      throw new Error(errorData.message || `Error: ${response.status}`);
     }
 
-    return {
-      success: true,
-    };
+    return response.json();
   } catch (error) {
-    console.error("Error en deleteReview:", error);
+    console.error("Error al eliminar reseña:", error);
     throw error;
   }
 };
 
-/**
- * Actualiza una reseña existente
- * @param {string} reviewId - ID de la reseña a actualizar
- * @param {Object} reviewData - Datos actualizados de la reseña
- * @returns {Promise<Object>} - Respuesta de la API
- */
-export const updateReview = async (reviewId, reviewData) => {
+// Actualizar una reseña
+export const updateReview = async (reviewId, rating, comment) => {
   try {
-    // Verificar el token de autenticación
     const token = localStorage.getItem("token");
+
     if (!token) {
-      throw new Error("Necesitas iniciar sesión para actualizar una reseña");
+      throw new Error("No estás autenticado. Por favor, inicia sesión.");
     }
 
-    // Hacer la solicitud PUT
-    const response = await fetch(`${API_URL}/reviews/${reviewId}`, {
+    const response = await fetch(`${API_BASE_URL}/reviews/${reviewId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(reviewData),
+      body: JSON.stringify({
+        rating,
+        comment,
+      }),
     });
 
-    // Manejar errores específicos del servidor
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || "Error al actualizar la reseña");
+      throw new Error(errorData.message || `Error: ${response.status}`);
     }
 
-    const data = await response.json();
-    return {
-      success: true,
-      data: data.data || data,
-    };
+    return response.json();
   } catch (error) {
-    console.error("Error en updateReview:", error);
+    console.error("Error al actualizar reseña:", error);
     throw error;
   }
 };
 
-export default {
-  getBookReviews,
-  createReview,
-  deleteReview,
-  updateReview,
+// Obtener todas las reseñas (cuando se agregue al backend)
+export const getAllReviews = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/reviews`);
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+    const data = await response.json();
+    return {
+      success: data.success,
+      reviews: data.data || [],
+      count: data.count || 0,
+    };
+  } catch (error) {
+    console.error("Error al obtener todas las reseñas:", error);
+    throw error;
+  }
 };

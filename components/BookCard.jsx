@@ -60,9 +60,9 @@ const BookCard = ({
       console.log("Respuesta completa de reviews:", response);
 
       // Verificar si la respuesta contiene un array de reseñas
-      if (response.success && Array.isArray(response.data)) {
-        console.log(`Se encontraron ${response.data.length} reseñas`);
-        setReviews(response.data);
+      if (response.success && Array.isArray(response.reviews)) {
+        console.log(`Se encontraron ${response.reviews.length} reseñas`);
+        setReviews(response.reviews);
       } else {
         console.warn("Estructura de respuesta inesperada:", response);
         setReviews([]);
@@ -176,15 +176,12 @@ const BookCard = ({
       console.log("ID del libro para la reseña:", effectiveId);
       console.log("Título del libro:", title);
 
-      // Preparamos el objeto de datos para la reseña
-      const reviewData = {
-        bookId: effectiveId,
-        rating: userRating,
-        comment: comment,
-      };
-
       // Enviamos la reseña a la API usando el método actualizado
-      const response = await reviewService.createReview(reviewData);
+      const response = await reviewService.createReview(
+        effectiveId,
+        userRating,
+        comment
+      );
 
       console.log("Respuesta del servidor:", response);
 
@@ -455,19 +452,6 @@ const BookCard = ({
                     <p className={styles.reviewComment}>
                       {review.comment || "Sin comentario"}
                     </p>
-
-                    {/* Información de la revisión - mantiene la depuración para desarrollo */}
-                    <div
-                      style={{
-                        fontSize: "10px",
-                        color: "#666",
-                        marginTop: "5px",
-                      }}
-                    >
-                      ID de reseña: {reviewId || "Desconocido"}
-                      <br />
-                      ID de usuario: {review.userId || "Desconocido"}
-                    </div>
 
                     {/* Mostrar botón de eliminar solo si es admin o es el autor de la reseña */}
                     {(isAdmin || (user && user.id === review.userId)) && (
