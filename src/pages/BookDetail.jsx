@@ -2,7 +2,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import styles from "../../styles/BookDetail.module.css";
 import { Star } from "lucide-react";
-import books from "../data/books.json";
+import { getAllBooks } from "../../services/bookService";
+import localBooks from "../data/books.json"; // Fallback
 import * as reviewService from "../../services/reviewService";
 
 const BookDetail = () => {
@@ -16,15 +17,35 @@ const BookDetail = () => {
   const [success, setSuccess] = useState("");
   const [reviews, setReviews] = useState([]);
   const [loadingReviews, setLoadingReviews] = useState(true);
+  const [booksError, setBooksError] = useState(null);
 
-  // Cargar el libro desde JSON y las reseñas desde la API
+  // Cargar el libro desde la API y las reseñas
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Cargar libro del JSON local
+        console.log("🔄 Cargando libro desde la API...");
+
+        // Intentar cargar desde la API
+        const books = await getAllBooks();
+        console.log("✅ Libros cargados desde la API:", books.length);
+
         const foundBook = books.find((book) => book.id.toString() === id);
         if (foundBook) {
           setBook(foundBook);
+        } else {
+          // Si no se encuentra en la API, intentar en datos locales
+          console.log(
+            "🔄 Libro no encontrado en la API, buscando en datos locales..."
+          );
+          const localBook = localBooks.find(
+            (book) => book.id.toString() === id
+          );
+          if (localBook) {
+            setBook(localBook);
+            setBooksError(
+              "Libro cargado desde datos locales (servidor no disponible)"
+            );
+          }
         }
 
         // Cargar reseñas de la API
@@ -39,7 +60,20 @@ const BookDetail = () => {
 
         setLoadingReviews(false);
       } catch (error) {
-        console.error("Error al cargar datos:", error);
+        console.error("❌ Error al cargar libro desde la API:", error);
+        console.log("🔄 Usando datos locales como fallback...");
+
+        setBooksError(
+          "Error al conectar con el servidor. Usando datos locales."
+        );
+
+        // Fallback a datos locales
+        const foundBook = localBooks.find((book) => book.id.toString() === id);
+        if (foundBook) {
+          setBook(foundBook);
+        }
+
+        setLoadingReviews(false);
       } finally {
         setLoading(false);
       }
@@ -110,6 +144,21 @@ const BookDetail = () => {
 
   return (
     <div className={styles.detailContainer}>
+      {booksError && (
+        <div
+          style={{
+            background: "#fff3cd",
+            color: "#856404",
+            padding: "10px",
+            borderRadius: "5px",
+            margin: "10px 0",
+            border: "1px solid #ffeaa7",
+          }}
+        >
+          ⚠️ {booksError}
+        </div>
+      )}
+
       <div className={styles.cover}>
         <img
           src={book.coverImage || "/api/placeholder/180/270"}

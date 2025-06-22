@@ -1,39 +1,87 @@
 import { useState, useEffect } from "react";
 import BookList from "../../components/BookList";
 import styles from "../../styles/Inicio.module.css";
-import books from "../data/books.json";
+import { getAllBooks } from "../../services/bookService";
+import localBooks from "../data/books.json"; // Fallback
 
 const Inicio = () => {
   const [featuredBooks, setFeaturedBooks] = useState([]);
   const [recentBooks, setRecentBooks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Usar directamente los datos del archivo JSON local
-    try {
-      // Filtrar para obtener libros destacados (con rating >= 4)
-      const featured = books.filter((book) => book.rating >= 4).slice(0, 10);
+    const loadBooks = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      // Obtener los libros más recientes
-      const recent = [...books]
-        .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
-        .slice(0, 10);
+        console.log("🔄 Cargando libros desde la API...");
 
-      setFeaturedBooks(featured);
-      setRecentBooks(recent);
-      setLoading(false);
-    } catch (err) {
-      console.error("Error al cargar libros:", err);
-      setLoading(false);
-    }
+        // Intentar cargar desde la API
+        const books = await getAllBooks();
+
+        console.log("✅ Libros cargados desde la API:", books.length);
+
+        // Filtrar para obtener libros destacados (con rating >= 4)
+        const featured = books.filter((book) => book.rating >= 4).slice(0, 10);
+
+        // Obtener los libros más recientes
+        const recent = [...books]
+          .sort(
+            (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+          )
+          .slice(0, 10);
+
+        setFeaturedBooks(featured);
+        setRecentBooks(recent);
+      } catch (err) {
+        console.error("❌ Error al cargar libros desde la API:", err);
+        console.log("🔄 Usando datos locales como fallback...");
+
+        setError("Error al conectar con el servidor. Mostrando datos locales.");
+
+        // Fallback a datos locales
+        const featured = localBooks
+          .filter((book) => book.rating >= 4)
+          .slice(0, 10);
+        const recent = [...localBooks]
+          .sort(
+            (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+          )
+          .slice(0, 10);
+
+        setFeaturedBooks(featured);
+        setRecentBooks(recent);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadBooks();
   }, []);
 
   if (loading) {
-    return <div className={styles.loading}>Cargando libros...</div>;
+    return <div className={styles.loading}>🔄 Cargando libros...</div>;
   }
 
   return (
     <div className={styles.inicioContainer}>
+      {error && (
+        <div
+          style={{
+            background: "#fff3cd",
+            color: "#856404",
+            padding: "10px",
+            borderRadius: "5px",
+            margin: "10px 0",
+            border: "1px solid #ffeaa7",
+          }}
+        >
+          ⚠️ {error}
+        </div>
+      )}
+
       <section className={styles.hero}>
         <h1>Biblioteca Virtual</h1>
         <p>

@@ -4,7 +4,8 @@ import styles from "../styles/Header.module.css";
 import { useBookCategory } from "../context/useBookCategory";
 import { useBookAuthor } from "../context/useBookAuthor";
 import { useAuth } from "../context/AuthContext"; // Importar el contexto de autenticación
-import books from "../src/data/books.json"; // Importamos los datos de libros directamente
+import { getAllBooks } from "../services/bookService";
+import localBooks from "../src/data/books.json"; // Fallback
 import {
   Book,
   Search,
@@ -32,7 +33,7 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
-  // Estados para categorías y autores obtenidos del JSON local
+  // Estados para categorías y autores obtenidos de la API
   const [uniqueCategories, setUniqueCategories] = useState([]);
   const [uniqueAuthors, setUniqueAuthors] = useState([]);
 
@@ -45,23 +46,46 @@ const Header = () => {
   const { selectedCategory, setSelectedCategory } = useBookCategory();
   const { selectedAuthor, setSelectedAuthor } = useBookAuthor();
 
-  // Obtener categorías y autores directamente del JSON local
+  // Obtener categorías y autores desde la API
   useEffect(() => {
-    try {
-      // Extraer categorías únicas
-      const categories = [...new Set(books.map((book) => book.category))]
-        .filter(Boolean)
-        .sort();
-      setUniqueCategories(categories);
+    const loadBooksData = async () => {
+      try {
+        console.log("🔄 Cargando datos de libros desde la API para Header...");
 
-      // Extraer autores únicos
-      const authors = [...new Set(books.map((book) => book.author))]
-        .filter(Boolean)
-        .sort();
-      setUniqueAuthors(authors);
-    } catch (error) {
-      console.error("Error al procesar categorías y autores:", error);
-    }
+        // Intentar cargar desde la API
+        const books = await getAllBooks();
+
+        console.log("✅ Datos de libros cargados desde la API:", books.length);
+
+        // Extraer categorías únicas
+        const categories = [...new Set(books.map((book) => book.category))]
+          .filter(Boolean)
+          .sort();
+        setUniqueCategories(categories);
+
+        // Extraer autores únicos
+        const authors = [...new Set(books.map((book) => book.author))]
+          .filter(Boolean)
+          .sort();
+        setUniqueAuthors(authors);
+      } catch (error) {
+        console.error("❌ Error al cargar datos desde la API:", error);
+        console.log("🔄 Usando datos locales como fallback...");
+
+        // Fallback a datos locales
+        const categories = [...new Set(localBooks.map((book) => book.category))]
+          .filter(Boolean)
+          .sort();
+        setUniqueCategories(categories);
+
+        const authors = [...new Set(localBooks.map((book) => book.author))]
+          .filter(Boolean)
+          .sort();
+        setUniqueAuthors(authors);
+      }
+    };
+
+    loadBooksData();
   }, []);
 
   // Manejar clics fuera de los dropdowns
