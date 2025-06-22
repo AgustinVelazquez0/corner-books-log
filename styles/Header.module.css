@@ -139,6 +139,7 @@
   transition: all 0.25s ease;
   position: relative;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .navLink::before {

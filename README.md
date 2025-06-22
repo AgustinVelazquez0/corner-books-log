@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Proyecto **Vite** con React
 
 ---
@@ -10,6 +11,18 @@
 
 Una aplicación simple que simula una **Library** desarrollada en React y configurada con **Vite**. Permite a los usuarios explorar distintos libros, dar reseñas, comentar, iniciar sesión entre otras funcionalidades. Usando Vite para un entorno de desarrollo más rápido.
 
+=======
+# Proyecto **Vite** con React para `BIOS`
+
+---
+
+## LIBRARY REACT PROJECT
+
+### CORNER-BOOS
+
+Una aplicación simple que simula una **Library** desarrollada en React y configurada con **Vite**. Permite a los usuarios explorar distintos libros, dar reseñas, comentar, iniciar sesión entre otras funcionalidades. Usando Vite para un entorno de desarrollo más rápido.
+
+>>>>>>> back
 ### Requisitos Previos
 
 Asegúrate de tener instalados los siguientes programas antes de comenzar:

@@ -189,7 +189,11 @@
   }
 
   .flexItem {
-    width: 90vw;
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+    min-height: 180px;
+    margin: 0 auto;
   }
 
   .scrollButton {

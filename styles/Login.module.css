@@ -1,0 +1,114 @@
+/* Login.module.css */
+
+.container {
+  max-width: 420px;
+  margin: 4rem auto;
+  padding: 2.5rem;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  font-family: "Segoe UI", sans-serif;
+  animation: fadeIn 0.5s ease-in;
+}
+
+.title {
+  text-align: center;
+  font-size: 2rem;
+  color: #1130b8;
+  margin-bottom: 1.5rem;
+}
+
+.error {
+  color: #e63946;
+  background-color: #ffe6e6;
+  padding: 0.75rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+}
+
+.group label {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.group input {
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  transition: border 0.2s;
+}
+
+.group input:focus {
+  outline: none;
+  border: 1px solid #1130b8;
+}
+
+.button {
+  background-color: #1130b8;
+  color: white;
+  padding: 0.9rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: background 0.3s ease;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 4px solid #ccc;
+  border-top: 4px solid #4caf50; /* color principal */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 1rem auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.button:hover {
+  background-color: #0d258e;
+}
+
+.register {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.register a {
+  margin-left: 0.4rem;
+  color: #4caf50;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

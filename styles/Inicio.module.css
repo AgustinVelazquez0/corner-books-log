@@ -1,0 +1,101 @@
+/* Estilos para el componente de Inicio */
+.inicioContainer {
+  width: 100%;
+  max-width: 1350px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.hero {
+  background-color: black;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  border-radius: var(--border-radius);
+  color: white;
+  margin-bottom: 2rem;
+  box-shadow: var(--box-shadow);
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.hero p {
+  font-size: 1.125rem;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.featuredSection,
+.recentSection {
+  margin-bottom: 2.5rem;
+}
+
+.featuredSection h2,
+.recentSection h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 2px solid var(--primary-color);
+  padding-bottom: 0.625rem;
+  color: var(--text-color);
+  font-weight: 600;
+  position: relative;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 1.25rem;
+  color: var(--text-light);
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .hero {
+    padding: 2.5rem 1rem;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  .hero p {
+    font-size: 1rem;
+  }
+
+  .featuredSection h2,
+  .recentSection h2 {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .inicioContainer {
+    padding: 0.5rem;
+  }
+
+  .hero {
+    padding: 2rem 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero h1 {
+    font-size: 1.75rem;
+  }
+
+  .featuredSection,
+  .recentSection {
+    margin-bottom: 1.5rem;
+  }
+
+  .featuredSection h2,
+  .recentSection h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+}
