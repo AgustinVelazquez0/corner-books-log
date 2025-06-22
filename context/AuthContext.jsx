@@ -24,16 +24,24 @@ export const AuthProvider = ({ children }) => {
         return;
       }
 
+      // Detectar entorno y configurar URL automáticamente
+      const getApiUrl = () => {
+        if (window.location.hostname.includes("onrender.com")) {
+          return "https://library-back-end-9vgl.onrender.com/api";
+        }
+        return "/api";
+      };
+
+      const apiUrl = getApiUrl();
+      console.log("🌐 Auth API URL configurada:", apiUrl);
+
       try {
         console.log("Enviando solicitud al endpoint /users/me");
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/users/me`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await fetch(`${apiUrl}/users/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         console.log("Respuesta recibida:", response.status);
 

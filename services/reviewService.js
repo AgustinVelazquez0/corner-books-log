@@ -1,4 +1,16 @@
-const API_BASE_URL = "/api";
+// Detectar entorno y configurar URL base automáticamente
+const getApiBaseUrl = () => {
+  // Si estamos en producción (dominio de Render)
+  if (window.location.hostname.includes("onrender.com")) {
+    return "https://library-back-end-9vgl.onrender.com/api";
+  }
+  // Si estamos en desarrollo local
+  return "/api";
+};
+
+const API_BASE_URL = getApiBaseUrl();
+
+console.log("🌐 Reviews API Base URL configurada:", API_BASE_URL);
 
 // Obtener reseñas de un libro específico
 export const getBookReviews = async (bookId) => {
