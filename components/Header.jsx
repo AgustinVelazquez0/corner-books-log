@@ -57,14 +57,22 @@ const Header = () => {
 
         console.log("✅ Datos de libros cargados desde la API:", books.length);
 
+        // Normalizar estructura: asegurar que todos los libros tengan id
+        const normalizedBooks = books.map((book) => ({
+          ...book,
+          id: book.id || book.numericId || book._id,
+        }));
+
         // Extraer categorías únicas
-        const categories = [...new Set(books.map((book) => book.category))]
+        const categories = [
+          ...new Set(normalizedBooks.map((book) => book.category)),
+        ]
           .filter(Boolean)
           .sort();
         setUniqueCategories(categories);
 
         // Extraer autores únicos
-        const authors = [...new Set(books.map((book) => book.author))]
+        const authors = [...new Set(normalizedBooks.map((book) => book.author))]
           .filter(Boolean)
           .sort();
         setUniqueAuthors(authors);

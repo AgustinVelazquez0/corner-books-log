@@ -60,7 +60,10 @@ const BookList = ({ books, listTitle = "Libros Recomendados" }) => {
           <div className={styles.scrollWrapper} ref={scrollRef}>
             <div className={styles.flexContainer}>
               {filteredBooks.map((book) => (
-                <div key={book.id} className={styles.flexItem}>
+                <div
+                  key={book._id || book.id || book.numericId}
+                  className={styles.flexItem}
+                >
                   <BookCard {...book} />
                 </div>
               ))}

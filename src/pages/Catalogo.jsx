@@ -24,7 +24,14 @@ const Catalogo = () => {
         const booksFromAPI = await getAllBooks();
 
         console.log("✅ Libros cargados desde la API:", booksFromAPI.length);
-        setBooks(booksFromAPI);
+
+        // Normalizar estructura: asegurar que todos los libros tengan id
+        const normalizedBooks = booksFromAPI.map((book) => ({
+          ...book,
+          id: book.id || book.numericId || book._id,
+        }));
+
+        setBooks(normalizedBooks);
       } catch (err) {
         console.error("❌ Error al cargar libros desde la API:", err);
         console.log("🔄 Usando datos locales como fallback...");

@@ -23,11 +23,19 @@ const Inicio = () => {
 
         console.log("✅ Libros cargados desde la API:", books.length);
 
+        // Normalizar estructura: asegurar que todos los libros tengan id
+        const normalizedBooks = books.map((book) => ({
+          ...book,
+          id: book.id || book.numericId || book._id,
+        }));
+
         // Filtrar para obtener libros destacados (con rating >= 4)
-        const featured = books.filter((book) => book.rating >= 4).slice(0, 10);
+        const featured = normalizedBooks
+          .filter((book) => book.rating >= 4)
+          .slice(0, 10);
 
         // Obtener los libros más recientes
-        const recent = [...books]
+        const recent = [...normalizedBooks]
           .sort(
             (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
           )
