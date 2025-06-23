@@ -9,23 +9,17 @@ const Catalogo = () => {
   const { selectedCategory } = useBookCategory();
   const { selectedAuthor } = useBookAuthor();
   const [books, setBooks] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const loadBooks = async () => {
       try {
-        setLoading(true);
         setError(null);
 
         console.log("🔄 Cargando libros desde la API para el catálogo...");
-
-        // Intentar cargar desde la API
         const booksFromAPI = await getAllBooks();
-
         console.log("✅ Libros cargados desde la API:", booksFromAPI.length);
 
-        // Normalizar estructura: asegurar que todos los libros tengan id
         const normalizedBooks = booksFromAPI.map((book) => ({
           ...book,
           id: book.id || book.numericId || book._id,
@@ -38,8 +32,6 @@ const Catalogo = () => {
 
         setError("Error al conectar con el servidor. Mostrando datos locales.");
         setBooks(localBooks);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -58,10 +50,6 @@ const Catalogo = () => {
   const sortedBooks = filteredBooks.sort((a, b) =>
     a.title.localeCompare(b.title)
   );
-
-  if (loading) {
-    return <div className={styles.loading}>🔄 Cargando catálogo...</div>;
-  }
 
   return (
     <div className={styles.catalogoContainer}>
@@ -92,7 +80,7 @@ const Catalogo = () => {
         {selectedAuthor && (
           <span className={styles.filterBadge}>Autor: {selectedAuthor}</span>
         )}
-        {filteredBooks.length === 0 && !loading && (
+        {filteredBooks.length === 0 && (
           <p>No se encontraron libros con los filtros aplicados.</p>
         )}
       </div>
