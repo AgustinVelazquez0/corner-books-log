@@ -5,7 +5,7 @@ const getApiBaseUrl = () => {
     return "https://library-back-end-9vgl.onrender.com/api";
   }
   // Si estamos en desarrollo local
-  return "/api";
+  return "http://localhost:5000/api";
 };
 
 const API_BASE_URL = getApiBaseUrl();
